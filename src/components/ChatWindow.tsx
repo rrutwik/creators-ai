@@ -47,14 +47,7 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, sidebar
 
   useEffect(() => {
     if (selectedChat) return;
-    setMessages([
-      {
-        _id: '1',
-        text: selectedBot.greeting,
-        role: MessageRole.ASSISTANT,
-        updatedAt: new Date().toISOString()
-      }
-    ]);
+    setMessages([]);
   }, [selectedBot]);
 
   const fetchNewMessages = useCallback(async (chatSelectionId?: string | null) => {
@@ -137,9 +130,9 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, sidebar
           >
             {sidebarOpen ? <ArrowLeft className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </Button>
-          <span className="text-2xl flex-shrink-0">{selectedBot.avatar}</span>
+          <span className="text-2xl flex-shrink-0" title={selectedBot.greeting}>{selectedBot.avatar}</span>
           <div className="min-w-0 flex-1">
-            <h2 className="font-semibold truncate text-base">{selectedBot.name}</h2>
+            <h2 className="font-semibold truncate text-base" title={selectedBot.greeting}>{selectedBot.name}</h2>
             <p className="text-sm text-muted-foreground truncate">{selectedBot.description}</p>
           </div>
         </div>
@@ -157,6 +150,16 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, sidebar
       {/* Messages */}
       <ScrollArea className="flex-1 p-4 overflow-hidden">
         <div className="space-y-4 pb-4">
+          {messages.length === 0 && !isTyping && (
+            <div className="flex items-center justify-center h-full min-h-[300px]">
+              <div className="text-center max-w-md">
+                <div className="text-6xl mb-4">{selectedBot.avatar}</div>
+                {/* <h3 className="text-xl font-semibold mb-2">{selectedBot.name}</h3> */}
+                <p className="text-muted-foreground mb-4">{selectedBot.greeting}</p>
+              </div>
+            </div>
+          )}
+
           {messages.map((message) => (
             <div
               key={message._id}

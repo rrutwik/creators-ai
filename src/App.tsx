@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { LoginPage } from './components/LoginPage';
 import { ChatInterface } from './components/ChatInterface';
+import { InstallPrompt } from './components/InstallPrompt';
 import { Toaster } from './components/ui/sonner';
 import { getUserDetails, logout } from './api';
+import { registerServiceWorker, setupInstallPrompt } from './utils/pwa';
 import Cookies from 'js-cookie';
 import type { User } from './interfaces';
 
@@ -26,6 +28,12 @@ export default function App() {
     };
 
     checkAuth();
+  }, []);
+
+  // Initialize PWA functionality
+  useEffect(() => {
+    registerServiceWorker();
+    setupInstallPrompt();
   }, []);
 
   const handleLogin = (userData: any) => {
@@ -66,6 +74,7 @@ export default function App() {
       ) : (
         <ChatInterface user={user} onLogout={handleLogout} />
       )}
+      <InstallPrompt />
       <Toaster />
     </div>
   );
