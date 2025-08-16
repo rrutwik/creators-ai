@@ -76,7 +76,7 @@ export function HistoryModal({ onClose, religiousBots, chatHistory }: HistoryMod
               </Button>
               {religiousBots.map(bot => (
                 <Button
-                  key={bot.id}
+                  key={bot._id}
                   variant={selectedFilter === bot.id ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setSelectedFilter(bot.id)}

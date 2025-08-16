@@ -8,6 +8,8 @@ import {
   MessageCircle
 } from 'lucide-react';
 import type { ChatDetails, ReligiousBot, User } from '../interfaces';
+import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar';
+import { avatarSrc } from '../utils';
 
 interface SidebarProps {
   user: User | null;
@@ -54,6 +56,7 @@ export function Sidebar({
     if (minutes > 0) return `${minutes}m`;
     return `${seconds}s`;
   };
+
   return (
     <div className={`${isMobile ? 'w-80' : 'w-80 lg:w-80'} bg-sidebar border-r border-sidebar-border flex flex-col h-full`}>
       {/* Header */}
@@ -71,10 +74,6 @@ export function Sidebar({
             </Button>
           )}
         </div>
-        <Button className="w-full mt-3 bg-primary hover:bg-primary/90 h-11 touch-manipulation">
-          <Plus className="w-4 h-4 mr-2" />
-          New Chat
-        </Button>
       </div>
 
       {/* Navigation Tabs */}
@@ -106,12 +105,11 @@ export function Sidebar({
             {religiousBots.map((bot) => (
               <div>
               <Button
-                key={bot.id}
+                key={bot._id}
                 variant={selectedBot?.id === bot.id ? "secondary" : "ghost"}
                 className="w-full justify-start h-auto p-4 touch-manipulation"
                 onClick={() => onSelectBot(bot)}
               >
-                { selectedChat?.chatbot_id._id === bot._id ? <Plus className="w-4 h-4" onClick={() => onSelectBot(bot)} /> : null}
                 <div className="flex items-center space-x-3 w-full">
                   <span className="text-2xl flex-shrink-0">{bot.avatar}</span>
                   <div className="flex-1 text-left min-w-0">
@@ -153,20 +151,20 @@ export function Sidebar({
 
       {/* User Profile */}
       <div className="p-4 border-t border-sidebar-border">
-        {/* <Button
+        <Button
           variant="ghost"
           className="w-full justify-start p-3 mb-3 h-auto touch-manipulation"
           onClick={onShowProfile}
         >
           <Avatar className="w-10 h-10 mr-3 flex-shrink-0">
-            <AvatarImage src={user?.first_name.charAt(0)} />
-            <AvatarFallback>{user?.first_name?.charAt(20)}</AvatarFallback>
+            <AvatarImage src={avatarSrc(user?.avatar)} />
+            <AvatarFallback>{user?.first_name?.charAt(0)}</AvatarFallback>
           </Avatar>
           <div className="flex-1 text-left min-w-0">
             <div className="text-sm font-medium truncate">{user?.first_name}</div>
             <div className="text-xs text-muted-foreground truncate">{user?.email}</div>
           </div>
-        </Button> */}
+        </Button>
         
         <div className="grid grid-cols-3 gap-2">
           {/* <Button 

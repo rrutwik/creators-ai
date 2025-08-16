@@ -6,15 +6,18 @@ import { Avatar, AvatarFallback } from './ui/avatar';
 import { Send, Menu, MoreVertical, Sparkles, ArrowLeft } from 'lucide-react';
 import { MessageRole, type ChatDetails, type ChatMessage, type ChatSession, type ReligiousBot } from '../interfaces';
 import { getChat, sendMessage } from '../api';
+import axios from 'axios';
 
 interface ChatWindowProps {
   selectedBot: ReligiousBot;
   selectedChat: ChatDetails | null;
   onToggleSidebar: () => void;
-  sidebarOpen?: boolean;
+  onMessageSent: (sessionUuid: string) => void;
+  sidebarOpen: boolean;
+  onRequireAddCredits: () => void;
 }
 
-export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, sidebarOpen }: ChatWindowProps) {
+export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, sidebarOpen, onMessageSent, onRequireAddCredits }: ChatWindowProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [chatSession, setChatSession] = useState<ChatSession | null>(null);
 
@@ -92,9 +95,18 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, sidebar
 
   const handleSendMessage = async () => {
     if (inputValue.trim() === '') return;
+    let updatedSession: ChatSession;
     try {
-      const response = await sendMessage(inputValue, selectedChat?.uuid, selectedBot?._id);
-      const updatedSession: ChatSession = response.data;
+      try {
+        const response = await sendMessage(inputValue, selectedChat?.uuid, selectedBot?._id);
+        updatedSession = response.data;
+      } catch (error) {
+        if (axios.isAxiosError(error) && (error as any).response?.status === 400 && (error as any).response?.data?.status === '1000') {
+          onRequireAddCredits();
+          return;
+        }
+        throw error;
+      }
 
       const anyNewMessage = updatedSession.messages.pop();
       setIsTyping(true);
@@ -103,6 +115,7 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, sidebar
       }
       setInputValue('');
       if (updatedSession?.uuid) {
+        onMessageSent(updatedSession.uuid);
         startPolling(updatedSession.uuid);
       }
     } catch (error: any) {

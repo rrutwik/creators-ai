@@ -4,7 +4,8 @@ import { ChatWindow } from './ChatWindow';
 import { ProfileModal } from './ProfileModal';
 import { HistoryModal } from './HistoryModal';
 import { SettingsModal } from './SettingsModal';
-import { getAvailableBots, getPastChats } from '../api';
+import { AddCreditsModal } from './AddCreditsModal';
+import { getAvailableBots, getPastChats, getChat } from '../api';
 import type { ChatDetails, ReligiousBot, User } from '../interfaces';
 
 interface ChatInterfaceProps {
@@ -24,6 +25,7 @@ export function ChatInterface({ user, onLogout }: ChatInterfaceProps) {
   const [selectedChat, setSelectedChat] = useState<ChatDetails | null>(null);
   const [chatHistory, setChatHistory] = useState<ChatDetails[]>([]);
   const [loadingChatHistory, setLoadingChatHistory] = useState(true);
+  const [showAddCredits, setShowAddCredits] = useState(false);
 
   // Check if device is mobile
   useEffect(() => {
@@ -82,6 +84,38 @@ export function ChatInterface({ user, onLogout }: ChatInterfaceProps) {
     };
     fetchChatHistory();
   }, []);
+
+  const handleMessageSent = async (sessionUuid: string) => {
+    try {
+      // Fetch the updated chat session
+      const response = await getChat(sessionUuid);
+      const updatedChat = response.data;
+      
+      const chatDetails: ChatDetails = {
+        _id: updatedChat.uuid,
+        name: updatedChat.name,
+        chatbot_id: updatedChat.chatbot_id,
+        uuid: updatedChat.uuid,
+        updatedAt: new Date().toISOString()
+      };
+      
+      if (!selectedChat) {
+        setSelectedChat(chatDetails);
+        setChatHistory(prev => [chatDetails, ...prev]);
+      } else {
+        // Update existing chat in history
+        setChatHistory(prev => 
+          prev.map(chat => 
+            chat.uuid === sessionUuid 
+              ? { ...chat, updatedAt: new Date().toISOString() }
+              : chat
+          )
+        );
+      }
+    } catch (error) {
+      console.error('Error updating chat session:', error);
+    }
+  };
 
   if (religiousBots.length === 0 || loadingChatHistory) {
     return (
@@ -159,6 +193,8 @@ export function ChatInterface({ user, onLogout }: ChatInterfaceProps) {
             selectedChat={selectedChat}
             onToggleSidebar={handleToggleSidebar}
             sidebarOpen={sidebarOpen}
+            onMessageSent={handleMessageSent}
+            onRequireAddCredits={() => user && setShowAddCredits(true)}
           />
         ) : (
           <div className="flex-1 flex items-center justify-center p-8">
@@ -198,6 +234,14 @@ export function ChatInterface({ user, onLogout }: ChatInterfaceProps) {
       {showSettings && (
         <SettingsModal
           onClose={() => setShowSettings(false)}
+        />
+      )}
+
+      {showAddCredits && user && (
+        <AddCreditsModal
+          user={user}
+          open={showAddCredits}
+          onClose={() => setShowAddCredits(false)}
         />
       )}
     </div>

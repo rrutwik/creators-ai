@@ -1,3 +1,5 @@
+import type { Buffer } from "buffer";
+
 interface Chat {
     uuid: string;
     name: string;
@@ -66,6 +68,7 @@ interface ChatMessage {
 
 interface ChatSession {
     uuid: string;
+    name: string;
     user_id: string;
     chatbot_id: Bot,
     messages: Array<ChatMessage>;
@@ -74,9 +77,11 @@ interface ChatSession {
 interface User {
     _id: string;
     first_name: string;
+    avatar: Buffer;
     last_name: string;
     email: string;
-    credits: number
+    credits: number;
+    createdAt: string;
 }
 
 interface Bot {

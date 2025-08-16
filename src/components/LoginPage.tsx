@@ -3,7 +3,7 @@ import Cookies from 'js-cookie';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { useState } from 'react';
 import { getUserDetails, loginWithGoogle } from '../api';
-import { GoogleLoginComponent } from './Login/GoogleLogin';
+import { GoogleLoginComponent } from './login/GoogleLogin';
 
 interface LoginPageProps {
   onLogin: (user: any) => void;
