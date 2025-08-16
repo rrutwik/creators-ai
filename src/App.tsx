@@ -11,6 +11,12 @@ import type { User } from './interfaces';
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null); // null = loading
   const [user, setUser] = useState<User | null>(null);
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const saved = localStorage.getItem('theme');
+    if (saved === 'light' || saved === 'dark') return saved as 'light' | 'dark';
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return prefersDark ? 'dark' : 'light';
+  });
 
   // Check authentication on app load
   useEffect(() => {
@@ -35,6 +41,19 @@ export default function App() {
     registerServiceWorker();
     setupInstallPrompt();
   }, []);
+
+  // Apply theme to <html> and persist
+  useEffect(() => {
+    const root = document.documentElement;
+    if (theme === 'dark') {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
 
   const handleLogin = (userData: any) => {
     setUser(userData.data);
@@ -69,6 +88,14 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Theme toggle */}
+      <button
+        onClick={toggleTheme}
+        className="fixed top-4 right-4 z-50 inline-flex items-center gap-2 rounded-md border bg-card text-card-foreground px-3 py-2 text-sm shadow-sm hover:bg-accent hover:text-accent-foreground"
+        aria-label="Toggle theme"
+      >
+        {theme === 'dark' ? '🌙 Dark' : '☀️ Light'}
+      </button>
       {!isAuthenticated ? (
         <LoginPage onLogin={handleLogin} />
       ) : (
