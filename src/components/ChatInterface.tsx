@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Sidebar } from './Sidebar';
 import { ChatWindow } from './ChatWindow';
 import { ProfileModal } from './ProfileModal';
@@ -26,6 +26,7 @@ export function ChatInterface({ user, onLogout }: ChatInterfaceProps) {
   const [chatHistory, setChatHistory] = useState<ChatDetails[]>([]);
   const [loadingChatHistory, setLoadingChatHistory] = useState(true);
   const [showAddCredits, setShowAddCredits] = useState(false);
+  const scrollYRef = useRef(0);
 
   // Check if device is mobile
   useEffect(() => {
@@ -71,6 +72,45 @@ export function ChatInterface({ user, onLogout }: ChatInterfaceProps) {
       setSidebarOpen(false);
     }
   };
+
+  // Prevent background (chat) scrolling when mobile sidebar is open
+  useEffect(() => {
+    const body = document.body;
+    if (isMobile && sidebarOpen) {
+      // Save current scroll position and lock body
+      scrollYRef.current = window.scrollY || window.pageYOffset || 0;
+      body.style.position = 'fixed';
+      body.style.top = `-${scrollYRef.current}px`;
+      body.style.left = '0';
+      body.style.right = '0';
+      body.style.width = '100%';
+      body.style.overflow = 'hidden';
+    } else {
+      // Restore body scroll
+      if (body.style.position === 'fixed') {
+        body.style.position = '';
+        body.style.top = '';
+        body.style.left = '';
+        body.style.right = '';
+        body.style.width = '';
+        body.style.overflow = '';
+        window.scrollTo(0, scrollYRef.current || 0);
+      }
+    }
+
+    // Cleanup on unmount
+    return () => {
+      if (body.style.position === 'fixed') {
+        body.style.position = '';
+        body.style.top = '';
+        body.style.left = '';
+        body.style.right = '';
+        body.style.width = '';
+        body.style.overflow = '';
+        window.scrollTo(0, scrollYRef.current || 0);
+      }
+    };
+  }, [isMobile, sidebarOpen]);
 
   useEffect(() => {
     const fetchChatHistory = async () => {

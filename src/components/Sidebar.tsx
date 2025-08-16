@@ -58,9 +58,13 @@ export function Sidebar({
   };
 
   return (
-    <div className={`${isMobile ? 'w-80' : 'w-80 lg:w-80'} bg-sidebar border-r border-sidebar-border flex flex-col h-full`}>
+    <div
+      className={`${
+        isMobile ? 'w-80' : 'w-80 lg:w-80'
+      } bg-sidebar border-r border-sidebar-border flex flex-col h-full max-h-screen min-h-0`}
+    >
       {/* Header */}
-      <div className="p-4 border-b border-sidebar-border">
+      <div className="p-4 border-b border-sidebar-border flex-shrink-0">
         <div className="flex items-center justify-between">
           <h1 className="text-lg font-semibold text-sidebar-foreground">CreatorsAI</h1>
           {isMobile && (
@@ -77,7 +81,7 @@ export function Sidebar({
       </div>
 
       {/* Navigation Tabs */}
-      <div className="px-4 py-3 border-b border-sidebar-border">
+      <div className="px-4 py-3 border-b border-sidebar-border flex-shrink-0">
         <div className="flex space-x-1">
           <Button
             variant={activeSection === 'bots' ? 'secondary' : 'ghost'}
@@ -99,7 +103,7 @@ export function Sidebar({
       </div>
 
       {/* Content Area */}
-      <ScrollArea className="flex-1 px-4 py-4">
+      <ScrollArea className="flex-1 min-h-0 px-4 py-4">
         {activeSection === 'bots' ? (
           <div className="space-y-3">
             {religiousBots.map((bot) => (
@@ -149,8 +153,8 @@ export function Sidebar({
         )}
       </ScrollArea>
 
-      {/* User Profile */}
-      <div className="p-4 border-t border-sidebar-border">
+      {/* User Profile & Logout (fixed at bottom) */}
+      <div className="p-4 border-t border-sidebar-border bg-sidebar flex-shrink-0">
         <Button
           variant="ghost"
           className="w-full justify-start p-3 mb-3 h-auto touch-manipulation"

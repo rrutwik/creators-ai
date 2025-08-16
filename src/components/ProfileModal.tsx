@@ -33,7 +33,7 @@ export function ProfileModal({ user, onClose }: ProfileModalProps) {
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="max-w-md mx-4 w-full max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-md w-full max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Profile</DialogTitle>
           <DialogDescription>

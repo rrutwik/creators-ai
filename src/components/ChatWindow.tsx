@@ -131,7 +131,7 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, sidebar
   };
 
   return (
-    <div className="flex flex-col h-full max-h-screen">
+    <div className="flex flex-col h-full max-h-screen min-h-0">
       {/* Header */}
       <div className="p-4 border-b border-border bg-card flex items-center justify-between min-h-[72px] flex-shrink-0">
         <div className="flex items-center space-x-3 min-w-0 flex-1">
@@ -150,10 +150,10 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, sidebar
           </div>
         </div>
         <div className="flex items-center space-x-2 flex-shrink-0">
-          <div className="hidden sm:flex items-center text-xs text-muted-foreground bg-muted px-2 py-1 rounded-md">
+          {/* <div className="hidden sm:flex items-center text-xs text-muted-foreground bg-muted px-2 py-1 rounded-md">
             <Sparkles className="w-3 h-3 mr-1" />
             AI Assistant
-          </div>
+          </div> */}
           <Button variant="ghost" size="icon" className="w-10 h-10 touch-manipulation">
             <MoreVertical className="w-4 h-4" />
           </Button>
@@ -161,7 +161,7 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, sidebar
       </div>
 
       {/* Messages */}
-      <ScrollArea className="flex-1 p-4 overflow-hidden">
+      <ScrollArea className="flex-1 min-h-0 p-4">
         <div className="space-y-4 pb-4">
           {messages.length === 0 && !isTyping && (
             <div className="flex items-center justify-center h-full min-h-[300px]">
