@@ -1,0 +1,51 @@
+[
+    {
+      "id": "christian",
+      "name": "Divine Counselor",
+      "religion": "Christianity",
+      "description": "Biblical wisdom and guidance",
+      "avatar": "✝️",
+      "greeting": "Peace be with you. How may I guide you with biblical wisdom today?"
+    },
+    {
+      "id": "islamic",
+      "name": "Al-Hakeem",
+      "religion": "Islam",
+      "description": "Quranic guidance and Islamic teachings",
+      "avatar": "☪️",
+      "greeting": "As-salamu alaykum. How may I assist you with Islamic guidance today?"
+    },
+    {
+      "id": "hindu",
+      "name": "Dharma Guide",
+      "religion": "Hinduism",
+      "description": "Vedic wisdom and dharmic guidance",
+      "avatar": "🕉️",
+      "greeting": "Namaste. How may I share dharmic wisdom from the sacred texts with you?"
+    },
+    {
+      "id": "buddhist",
+      "name": "Enlightened Teacher",
+      "religion": "Buddhism",
+      "description": "Buddhist teachings and mindfulness",
+      "avatar": "☸️",
+      "greeting": "May you find peace. How can I guide you on the path of enlightenment?"
+    },
+    {
+      "id": "jewish",
+      "name": "Torah Scholar",
+      "religion": "Judaism",
+      "description": "Torah wisdom and Jewish teachings",
+      "avatar": "✡️",
+      "greeting": "Shalom. How may I share Torah wisdom and Jewish guidance with you today?"
+    },
+    {
+      "id": "sikh",
+      "name": "Guru's Voice",
+      "religion": "Sikhism",
+      "description": "Guru Granth Sahib teachings",
+      "avatar": "☬",
+      "greeting": "Waheguru ji ka khalsa, Waheguru ji ki fateh. How may I guide you today?"
+    }
+  ]
+  
