@@ -7,8 +7,11 @@ import { getUserDetails, logout } from './api';
 import { registerServiceWorker, setupInstallPrompt } from './utils/pwa';
 import Cookies from 'js-cookie';
 import type { User } from './interfaces';
+import { useTranslation } from 'react-i18next';
+import { LanguageSwitcher } from './components/LanguageSwitcher';
 
 export default function App() {
+  const { t } = useTranslation();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null); // null = loading
   const [user, setUser] = useState<User | null>(null);
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
@@ -80,7 +83,7 @@ export default function App() {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading...</p>
+          <p className="text-muted-foreground">{t('common.loading')}</p>
         </div>
       </div>
     );
@@ -92,10 +95,11 @@ export default function App() {
       <button
         onClick={toggleTheme}
         className="fixed top-4 right-4 z-50 inline-flex items-center gap-2 rounded-md border bg-card text-card-foreground px-3 py-2 text-sm shadow-sm hover:bg-accent hover:text-accent-foreground"
-        aria-label="Toggle theme"
+        aria-label={t('theme.' + (theme === 'dark' ? 'dark' : 'light'))}
       >
-        {theme === 'dark' ? '🌙 Dark' : '☀️ Light'}
+        {theme === 'dark' ? t('theme.dark') : t('theme.light')}
       </button>
+      <LanguageSwitcher />
       {!isAuthenticated ? (
         <LoginPage onLogin={handleLogin} />
       ) : (

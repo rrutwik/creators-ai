@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { X, Download } from 'lucide-react';
 import { promptInstall, isStandalone } from '../utils/pwa';
+import { useTranslation } from 'react-i18next';
 
 export function InstallPrompt() {
+  const { t } = useTranslation();
   const [showPrompt, setShowPrompt] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
@@ -52,9 +54,9 @@ export function InstallPrompt() {
           <Download className="h-6 w-6 text-primary" />
         </div>
         <div className="flex-1">
-          <h3 className="font-semibold text-sm mb-1">Install CreatorsAI</h3>
+          <h3 className="font-semibold text-sm mb-1">{t('install.title')}</h3>
           <p className="text-xs text-muted-foreground mb-3">
-            Install our app for a better experience with offline access and native features.
+            {t('install.body')}
           </p>
           <div className="flex gap-2">
             <Button 
@@ -62,7 +64,7 @@ export function InstallPrompt() {
               onClick={handleInstall}
               className="text-xs"
             >
-              Install
+              {t('common.install')}
             </Button>
             <Button 
               size="sm" 
@@ -70,7 +72,7 @@ export function InstallPrompt() {
               onClick={handleDismiss}
               className="text-xs"
             >
-              Not now
+              {t('common.notNow')}
             </Button>
           </div>
         </div>

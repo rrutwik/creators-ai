@@ -7,6 +7,7 @@ import { SettingsModal } from './SettingsModal';
 import { AddCreditsModal } from './AddCreditsModal';
 import { getAvailableBots, getPastChats, getChat } from '../api';
 import type { ChatDetails, ReligiousBot, User } from '../interfaces';
+import { useTranslation } from 'react-i18next';
 
 interface ChatInterfaceProps {
   user: User | null;
@@ -15,6 +16,7 @@ interface ChatInterfaceProps {
 }
 
 export function ChatInterface({ user, onLogout }: ChatInterfaceProps) {
+  const { t } = useTranslation();
   const [religiousBots, setReligiousBots] = useState<ReligiousBot[]>([]);
   const [selectedBot, setSelectedBot] = useState<ReligiousBot | null>(null);
   const [showProfile, setShowProfile] = useState(false);
@@ -163,7 +165,7 @@ export function ChatInterface({ user, onLogout }: ChatInterfaceProps) {
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading spiritual guides...</p>
+            <p className="text-muted-foreground">{t('chat.loadingGuides')}</p>
           </div>
         </div>
       </div>
@@ -240,15 +242,13 @@ export function ChatInterface({ user, onLogout }: ChatInterfaceProps) {
           <div className="flex-1 flex items-center justify-center p-8">
             <div className="text-center max-w-md">
               <div className="text-6xl mb-4">🙏</div>
-              <h2 className="text-2xl font-semibold mb-2">Welcome to Spiritual Guidance</h2>
-              <p className="text-muted-foreground mb-4">
-                Select a spiritual guide from the sidebar to begin your journey of wisdom and enlightenment.
-              </p>
+              <h2 className="text-2xl font-semibold mb-2">{t('chat.welcomeTitle')}</h2>
+              <p className="text-muted-foreground mb-4">{t('chat.welcomeBody')}</p>
               <button
                 onClick={handleToggleSidebar}
                 className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
               >
-                Choose a Guide
+                {t('chat.chooseGuide')}
               </button>
             </div>
           </div>

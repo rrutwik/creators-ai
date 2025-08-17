@@ -6,6 +6,7 @@ import { ScrollArea } from './ui/scroll-area';
 import { Separator } from './ui/separator';
 import { Search, Calendar, Trash2, Download } from 'lucide-react';
 import type { ChatDetails, ReligiousBot } from '../interfaces';
+import { useTranslation } from 'react-i18next';
 
 interface HistoryModalProps {
   onClose: () => void;
@@ -14,6 +15,7 @@ interface HistoryModalProps {
 }
 
 export function HistoryModal({ onClose, religiousBots, chatHistory }: HistoryModalProps) {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilter, setSelectedFilter] = useState<string>('all');
 
@@ -31,14 +33,17 @@ export function HistoryModal({ onClose, religiousBots, chatHistory }: HistoryMod
   };
 
   const formatDate = (_date: string) => {
+    // Localized relative dates
+    const today = t('dates.today');
+    const yesterday = t('dates.yesterday');
     const now = new Date();
     const date = new Date(_date);
     const diff = now.getTime() - date.getTime();
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-    if (days === 0) return 'Today';
-    if (days === 1) return 'Yesterday';
-    if (days < 7) return `${days} days ago`;
+    if (days === 0) return today;
+    if (days === 1) return yesterday;
+    if (days < 7) return t('dates.daysAgo', { count: days });
     return date.toLocaleDateString();
   };
 
@@ -46,9 +51,9 @@ export function HistoryModal({ onClose, religiousBots, chatHistory }: HistoryMod
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl mx-4 w-full max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
-          <DialogTitle>Chat History</DialogTitle>
+          <DialogTitle>{t('historyModal.title')}</DialogTitle>
           <DialogDescription>
-            Browse and manage your spiritual conversations
+            {t('historyModal.description')}
           </DialogDescription>
         </DialogHeader>
 
@@ -58,7 +63,7 @@ export function HistoryModal({ onClose, religiousBots, chatHistory }: HistoryMod
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
-                placeholder="Search conversations..."
+                placeholder={t('historyModal.search')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 h-11 touch-manipulation"
@@ -72,7 +77,7 @@ export function HistoryModal({ onClose, religiousBots, chatHistory }: HistoryMod
                 onClick={() => setSelectedFilter('all')}
                 className="flex-shrink-0 h-10 touch-manipulation"
               >
-                All
+                {t('historyModal.all')}
               </Button>
               {religiousBots.map(bot => (
                 <Button
@@ -146,14 +151,14 @@ export function HistoryModal({ onClose, religiousBots, chatHistory }: HistoryMod
 
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pt-4 border-t">
             <div className="text-sm text-muted-foreground">
-              {filteredHistory.length} conversation{filteredHistory.length !== 1 ? 's' : ''} found
+              {t('historyModal.conversationsFound', { count: filteredHistory.length, suffix: filteredHistory.length !== 1 ? 's' : '' })}
             </div>
             <div className="flex gap-2 w-full sm:w-auto">
               <Button variant="outline" onClick={onClose} className="flex-1 sm:flex-none h-11 touch-manipulation">
-                Close
+                {t('common.close')}
               </Button>
               <Button className="flex-1 sm:flex-none h-11 touch-manipulation">
-                Export All
+                {t('historyModal.exportAll')}
               </Button>
             </div>
           </div>

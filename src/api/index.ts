@@ -2,7 +2,7 @@ import axios, { type AxiosInstance, type AxiosResponse } from 'axios';
 import Cookies from 'js-cookie';
 import { type ChatDetails, type ChatSession, type ReligiousBot } from '../interfaces';
 
-const BASE_URL = 'https://backend-api.techkarmic.com'; // 'https://backend-api.techkarmic.com';
+const BASE_URL = 'http://localhost:3000';
 
 export const getAccessToken = () => Cookies.get('session_token');
 export const getRefreshToken = () => Cookies.get('refresh_token');

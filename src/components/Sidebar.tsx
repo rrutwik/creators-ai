@@ -10,6 +10,7 @@ import {
 import type { ChatDetails, ReligiousBot, User } from '../interfaces';
 import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar';
 import { avatarSrc } from '../utils';
+import { useTranslation } from 'react-i18next';
 
 interface SidebarProps {
   user: User | null;
@@ -43,6 +44,7 @@ export function Sidebar({
   onToggleCollapse,
   isMobile = false
 }: SidebarProps) {
+  const { t } = useTranslation();
   const [activeSection, setActiveSection] = useState<'bots' | 'history'>('bots');
   const formatTime = (date: string) => {
     const now = new Date();
@@ -66,7 +68,7 @@ export function Sidebar({
       {/* Header */}
       <div className="p-4 border-b border-sidebar-border flex-shrink-0">
         <div className="flex items-center justify-between">
-          <h1 className="text-lg font-semibold text-sidebar-foreground">CreatorsAI</h1>
+          <h1 className="text-lg font-semibold text-sidebar-foreground">{t('common.appName')}</h1>
           {isMobile && (
             <Button
               variant="ghost"
@@ -89,7 +91,7 @@ export function Sidebar({
             onClick={() => setActiveSection('bots')}
             className="flex-1 h-10 touch-manipulation"
           >
-            Religious Guides
+            {t('sidebar.religiousGuides')}
           </Button>
           <Button
             variant={activeSection === 'history' ? 'secondary' : 'ghost'}
@@ -97,7 +99,7 @@ export function Sidebar({
             onClick={() => setActiveSection('history')}
             className="flex-1 h-10 touch-manipulation"
           >
-            History
+            {t('sidebar.history')}
           </Button>
         </div>
       </div>
@@ -196,7 +198,7 @@ export function Sidebar({
             onClick={onLogout}
           >
             <LogOut className="w-4 h-4 mb-1" />
-            <span className="text-xs">Logout</span>
+            <span className="text-xs">{t('common.logout')}</span>
           </Button>
         </div>
       </div>

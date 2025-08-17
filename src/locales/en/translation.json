@@ -1,0 +1,76 @@
+{
+  "common": {
+    "appName": "CreatorsAI",
+    "loading": "Loading...",
+    "cancel": "Cancel",
+    "saveChanges": "Save Changes",
+    "close": "Close",
+    "done": "Done",
+    "install": "Install",
+    "notNow": "Not now",
+    "logout": "Logout",
+    "profile": "Profile",
+    "settings": "Settings",
+    "history": "History"
+  },
+  "theme": {
+    "dark": "🌙 Dark",
+    "light": "☀️ Light"
+  },
+  "login": {
+    "welcomeTitle": "Welcome to CreatorsAI",
+    "welcomeDesc1": "Connect with divine wisdom from different religious traditions.",
+    "welcomeDesc2": "Chat with AI representations of religious figures for guidance and spiritual insights."
+  },
+  "chat": {
+    "loadingGuides": "Loading spiritual guides...",
+    "welcomeTitle": "Welcome to Spiritual Guidance",
+    "welcomeBody": "Select a spiritual guide from the sidebar to begin your journey of wisdom and enlightenment.",
+    "chooseGuide": "Choose a Guide",
+    "placeholder": "Ask {{name}} for spiritual guidance...",
+    "disclaimer": "AI responses are based on religious texts and traditions. Always consult religious authorities for important spiritual matters."
+  },
+  "sidebar": {
+    "religiousGuides": "Religious Guides",
+    "history": "History"
+  },
+  "install": {
+    "title": "Install CreatorsAI",
+    "body": "Install our app for a better experience with offline access and native features."
+  },
+  "profile": {
+    "title": "Profile",
+    "description": "Manage your CreatorsAI account settings",
+    "verifiedUser": "Verified User",
+    "displayName": "Display Name",
+    "save": "Save",
+    "emailAddress": "Email Address",
+    "memberSince": "Member Since",
+    "currentCredits": "Current Credits",
+    "addCredits": "Add Credits"
+  },
+  "addCredits": {
+    "title": "Add Credits",
+    "description": "Purchase chat credits. Payments may take up to 5 hours to reflect in your account.",
+    "currentCredits": "Current Credits",
+    "creditsToAdd": "Credits to add",
+    "rate": "Rate: ₹0.50 per credit. Enter an even number (min 2).",
+    "payViaUpi": "Pay via UPI",
+    "openUpiApp": "Open UPI App",
+    "copyLink": "Copy Link",
+    "payingWillAdd": "Paying ₹{{amount}} will add {{credits}} credits to {{email}}. It can take up to 5 hours to reflect."
+  },
+  "historyModal": {
+    "title": "Chat History",
+    "description": "Browse and manage your spiritual conversations",
+    "search": "Search conversations...",
+    "all": "All",
+    "exportAll": "Export All",
+    "conversationsFound": "{{count}} conversation{{suffix}} found"
+  },
+  "dates": {
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "daysAgo": "{{count}} days ago"
+  }
+}

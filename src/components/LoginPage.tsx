@@ -4,12 +4,14 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import { useState } from 'react';
 import { getUserDetails, loginWithGoogle } from '../api';
 import { GoogleLoginComponent } from './login/GoogleLogin';
+import { useTranslation } from 'react-i18next';
 
 interface LoginPageProps {
   onLogin: (user: any) => void;
 }
 
 export function LoginPage({ onLogin }: LoginPageProps) {
+  const { t } = useTranslation();
   const clientId = '201954194593-36t0nksh9jusg01k58et81ct27objt26.apps.googleusercontent.com';
 
   const handleLoginSuccess = async (response: any) => {
@@ -36,10 +38,11 @@ export function LoginPage({ onLogin }: LoginPageProps) {
             <div className="mx-auto w-16 h-16 bg-primary text-primary-foreground rounded-full flex items-center justify-center">
               <span className="text-2xl">🙏</span>
             </div>
-            <CardTitle className="text-2xl">Welcome to CreatorsAI</CardTitle>
+            <CardTitle className="text-2xl">{t('login.welcomeTitle')}</CardTitle>
             <CardDescription className="text-center">
-              Connect with divine wisdom from different religious traditions.
-              Chat with AI representations of religious figures for guidance and spiritual insights.
+              {t('login.welcomeDesc1')}
+              <br />
+              {t('login.welcomeDesc2')}
             </CardDescription>
           </CardHeader>
           <GoogleLoginComponent handleLoginSuccess={handleLoginSuccess} handleLoginError={handleLoginError} />

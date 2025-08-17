@@ -10,6 +10,7 @@ import { Edit, Mail, Calendar, Shield } from 'lucide-react';
 import type { User } from '../interfaces';
 import { avatarSrc } from '../utils';
 import { AddCreditsModal } from './AddCreditsModal';
+import { useTranslation } from 'react-i18next';
 
 interface ProfileModalProps {
   user: User | null;
@@ -17,6 +18,7 @@ interface ProfileModalProps {
 }
 
 export function ProfileModal({ user, onClose }: ProfileModalProps) {
+  const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [displayName, setDisplayName] = useState(user?.first_name || '');
   const [showAddCredits, setShowAddCredits] = useState(false);
@@ -35,9 +37,9 @@ export function ProfileModal({ user, onClose }: ProfileModalProps) {
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="max-w-md w-full max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Profile</DialogTitle>
+          <DialogTitle>{t('profile.title')}</DialogTitle>
           <DialogDescription>
-            Manage your CreatorsAI account settings
+            {t('profile.description')}
           </DialogDescription>
         </DialogHeader>
         
@@ -50,7 +52,7 @@ export function ProfileModal({ user, onClose }: ProfileModalProps) {
             </Avatar>
             <Badge variant="secondary" className="flex items-center gap-1">
               <Shield className="w-3 h-3" />
-              Verified User
+              {t('profile.verifiedUser')}
             </Badge>
           </div>
 
@@ -60,7 +62,7 @@ export function ProfileModal({ user, onClose }: ProfileModalProps) {
           <div className="space-y-6">
             <div className="space-y-3">
               <Label htmlFor="name" className="flex items-center gap-2">
-                Display Name
+                {t('profile.displayName')}
                 <Button
                   variant="ghost"
                   size="sm"
@@ -86,7 +88,7 @@ export function ProfileModal({ user, onClose }: ProfileModalProps) {
                     }}
                     className="h-11 touch-manipulation"
                   >
-                    Save
+                    {t('profile.save')}
                   </Button>
                 </div>
               ) : (
@@ -99,7 +101,7 @@ export function ProfileModal({ user, onClose }: ProfileModalProps) {
             <div className="space-y-3">
               <Label className="flex items-center gap-2">
                 <Mail className="w-4 h-4" />
-                Email Address
+                {t('profile.emailAddress')}
               </Label>
               <div className="flex items-center gap-2 p-3 bg-muted rounded-md">
                 <span className="text-sm break-all">{user.email}</span>
@@ -109,7 +111,7 @@ export function ProfileModal({ user, onClose }: ProfileModalProps) {
             <div className="space-y-3">
               <Label className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
-                Member Since
+                {t('profile.memberSince')}
               </Label>
               <div className="flex items-center gap-2 p-3 bg-muted rounded-md">
                 <span className="text-sm">{memberSinceMondayYearString(user?.createdAt)}</span>
@@ -138,11 +140,11 @@ export function ProfileModal({ user, onClose }: ProfileModalProps) {
           {/* Credits */}
           <div className="space-y-3 pt-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Current Credits</span>
+              <span className="text-sm text-muted-foreground">{t('profile.currentCredits')}</span>
               <span className="text-base font-medium">{user.credits ?? 0}</span>
             </div>
             <Button className="w-full h-11 touch-manipulation" onClick={() => setShowAddCredits(true)}>
-              Add Credits
+              {t('profile.addCredits')}
             </Button>
           </div>
 
@@ -156,7 +158,7 @@ export function ProfileModal({ user, onClose }: ProfileModalProps) {
 
           <div className="flex gap-3 pt-4">
             <Button variant="outline" className="flex-1 h-11 touch-manipulation" onClick={onClose}>
-              Close
+              {t('common.close')}
             </Button>
             {/* <Button className="flex-1 h-11 touch-manipulation">
               Edit Profile

@@ -5,6 +5,7 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import type { User } from '../interfaces';
 import { generateUpiUrl } from '../utils';
+import { useTranslation } from 'react-i18next';
 
 interface AddCreditsModalProps {
   user: User;
@@ -13,6 +14,7 @@ interface AddCreditsModalProps {
 }
 
 export function AddCreditsModal({ user, open, onClose }: AddCreditsModalProps) {
+  const { t } = useTranslation();
   const [creditsToAdd, setCreditsToAdd] = useState<number>(10);
   const minimumCredits = 2;
   const maximumCredits = 2500;
@@ -29,20 +31,20 @@ export function AddCreditsModal({ user, open, onClose }: AddCreditsModalProps) {
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-md mx-4 w-full">
         <DialogHeader>
-          <DialogTitle>Add Credits</DialogTitle>
+          <DialogTitle>{t('addCredits.title')}</DialogTitle>
           <DialogDescription>
-            Purchase chat credits. Payments may take up to 5 hours to reflect in your account.
+            {t('addCredits.description')}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Current Credits</span>
+            <span className="text-sm text-muted-foreground">{t('addCredits.currentCredits')}</span>
             <span className="text-base font-medium">{user.credits ?? 0}</span>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="creditsToAdd">Credits to add</Label>
+            <Label htmlFor="creditsToAdd">{t('addCredits.creditsToAdd')}</Label>
             <div className="flex gap-2">
               <Input
                 id="creditsToAdd"
@@ -69,13 +71,13 @@ export function AddCreditsModal({ user, open, onClose }: AddCreditsModalProps) {
               </div>
             </div>
             <p className="text-xs text-muted-foreground">
-              Rate: ₹0.50 per credit. Enter an even number (min 2).
+              {t('addCredits.rate')}
             </p>
           </div>
 
           {creditsToAdd > 0 && (
             <div className="space-y-3">
-              <Label>Pay via UPI</Label>
+              <Label>{t('addCredits.payViaUpi')}</Label>
               <div className="flex flex-col items-center gap-3">
                 <img src={qrUrl} alt="UPI QR Code" className="w-44 h-44 rounded-md border" />
                 <div className="flex gap-2 w-full">
@@ -83,7 +85,7 @@ export function AddCreditsModal({ user, open, onClose }: AddCreditsModalProps) {
                     className="flex-1 h-11"
                     onClick={() => window.open(upiUrl, '_blank')}
                   >
-                    Open UPI App
+                    {t('addCredits.openUpiApp')}
                   </Button>
                   <Button
                     variant="outline"
@@ -94,11 +96,11 @@ export function AddCreditsModal({ user, open, onClose }: AddCreditsModalProps) {
                       } catch {}
                     }}
                   >
-                    Copy Link
+                    {t('addCredits.copyLink')}
                   </Button>
                 </div>
                 <div className="text-xs text-muted-foreground text-center">
-                  Paying ₹{amount} will add {creditsToAdd} credits to {user.email}. It can take up to 5 hours to reflect.
+                  {t('addCredits.payingWillAdd', { amount, credits: creditsToAdd, email: user.email })}
                 </div>
               </div>
             </div>
@@ -106,10 +108,10 @@ export function AddCreditsModal({ user, open, onClose }: AddCreditsModalProps) {
 
           <div className="flex gap-3 pt-2">
             <Button variant="outline" className="flex-1 h-11" onClick={onClose}>
-              Close
+              {t('common.close')}
             </Button>
             <Button className="flex-1 h-11" onClick={onClose}>
-              Done
+              {t('common.done')}
             </Button>
           </div>
         </div>
