@@ -11,7 +11,7 @@ import type { User } from '../interfaces';
 import { avatarSrc } from '../utils';
 import { AddCreditsModal } from './AddCreditsModal';
 import { useTranslation } from 'react-i18next';
-import { updateProfile } from '../api';
+import { updateProfile } from '../utils/api';
 
 interface ProfileModalProps {
   user: User | null;

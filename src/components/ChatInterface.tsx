@@ -5,7 +5,7 @@ import { ProfileModal } from './ProfileModal';
 import { HistoryModal } from './HistoryModal';
 import { SettingsModal } from './SettingsModal';
 import { AddCreditsModal } from './AddCreditsModal';
-import { getAvailableBots, getPastChats, getChat } from '../api';
+import { getAvailableBots, getPastChats, getChat } from '../utils/api';
 import type { ChatDetails, ReligiousBot, User } from '../interfaces';
 import { useTranslation } from 'react-i18next';
 

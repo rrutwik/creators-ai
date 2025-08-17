@@ -5,7 +5,7 @@ import { ScrollArea } from './ui/scroll-area';
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { Send, Menu, MoreVertical, Sparkles, ArrowLeft } from 'lucide-react';
 import { MessageRole, type ChatDetails, type ChatMessage, type ChatSession, type ReligiousBot } from '../interfaces';
-import { getChat, sendMessage } from '../api';
+import { getChat, sendMessage } from '../utils/api';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 

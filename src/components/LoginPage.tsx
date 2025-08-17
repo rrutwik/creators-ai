@@ -2,7 +2,7 @@ import { Card, CardDescription, CardHeader, CardTitle } from './ui/card';
 import Cookies from 'js-cookie';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { useState } from 'react';
-import { getUserDetails, loginWithGoogle } from '../api';
+import { getUserDetails, loginWithGoogle } from '../utils/api';
 import { GoogleLoginComponent } from './login/GoogleLogin';
 import { useTranslation } from 'react-i18next';
 
