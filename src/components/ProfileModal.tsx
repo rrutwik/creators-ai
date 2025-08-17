@@ -11,17 +11,20 @@ import type { User } from '../interfaces';
 import { avatarSrc } from '../utils';
 import { AddCreditsModal } from './AddCreditsModal';
 import { useTranslation } from 'react-i18next';
+import { updateProfile } from '../api';
 
 interface ProfileModalProps {
   user: User | null;
   onClose: () => void;
+  onUserUpdated?: (user: User) => void;
 }
 
-export function ProfileModal({ user, onClose }: ProfileModalProps) {
-  const { t } = useTranslation();
+export function ProfileModal({ user, onClose, onUserUpdated }: ProfileModalProps) {
+  const { t, i18n } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [displayName, setDisplayName] = useState(user?.first_name || '');
   const [showAddCredits, setShowAddCredits] = useState(false);
+  const [lang, setLang] = useState<string>(user?.language || 'en');
 
   if (!user) return null;
 
@@ -116,6 +119,33 @@ export function ProfileModal({ user, onClose }: ProfileModalProps) {
               <div className="flex items-center gap-2 p-3 bg-muted rounded-md">
                 <span className="text-sm">{memberSinceMondayYearString(user?.createdAt)}</span>
               </div>
+            </div>
+
+            <div className="space-y-3">
+              <Label htmlFor="language" className="flex items-center gap-2">
+                {t('profile.language')}
+              </Label>
+              <select
+                id="language"
+                value={lang}
+                onChange={async (e) => {
+                  const newLang = e.target.value;
+                  setLang(newLang);
+                  try {
+                    await updateProfile({ language: newLang });
+                  } catch (err) {
+                    // ignore errors in UI for now
+                  }
+                  void i18n.changeLanguage(newLang);
+                  onUserUpdated?.({ ...user, language: newLang });
+                }}
+                className="h-11 px-3 rounded-md border bg-background"
+              >
+                <option value="en">{t('profile.language_en')}</option>
+                <option value="hi">{t('profile.language_hi')}</option>
+                <option value="gu">{t('profile.language_gu')}</option>
+                <option value="mr">{t('profile.language_mr')}</option>
+              </select>
             </div>
           </div>
 

@@ -1,6 +1,6 @@
 import axios, { type AxiosInstance, type AxiosResponse } from 'axios';
 import Cookies from 'js-cookie';
-import { type ChatDetails, type ChatSession, type ReligiousBot } from '../interfaces';
+import { type ChatDetails, type ChatSession, type ReligiousBot, type User } from '../interfaces';
 
 const BASE_URL = 'http://localhost:3000';
 
@@ -141,4 +141,11 @@ export const getAvailableBots = async () => {
         getAuthenticatedAxiosInstance().get('/chatbots')
     );
 }
+
+
+export const updateProfile = (body: Partial<User>) => {
+    return handleRequest(() =>
+        getAuthenticatedAxiosInstance().put('/user/profile', body)
+    );
+};
 

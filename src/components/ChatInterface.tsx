@@ -13,9 +13,10 @@ interface ChatInterfaceProps {
   user: User | null;
   onLogout: () => void;
   religiousBots?: ReligiousBot[];
+  onUserUpdated?: (user: User) => void;
 }
 
-export function ChatInterface({ user, onLogout }: ChatInterfaceProps) {
+export function ChatInterface({ user, onLogout, onUserUpdated }: ChatInterfaceProps) {
   const { t } = useTranslation();
   const [religiousBots, setReligiousBots] = useState<ReligiousBot[]>([]);
   const [selectedBot, setSelectedBot] = useState<ReligiousBot | null>(null);
@@ -260,6 +261,7 @@ export function ChatInterface({ user, onLogout }: ChatInterfaceProps) {
         <ProfileModal
           user={user}
           onClose={() => setShowProfile(false)}
+          onUserUpdated={onUserUpdated}
         />
       )}
 

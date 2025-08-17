@@ -8,6 +8,7 @@ import { registerServiceWorker, setupInstallPrompt } from './utils/pwa';
 import Cookies from 'js-cookie';
 import type { User } from './interfaces';
 import { useTranslation } from 'react-i18next';
+import i18n from './i18n';
 import { LanguageSwitcher } from './components/LanguageSwitcher';
 
 export default function App() {
@@ -27,6 +28,11 @@ export default function App() {
       try {
         const userData = await getUserDetails();
         setUser(userData.data);
+        // Apply user preferred language if present
+        const lng = userData?.data?.language || 'en';
+        if (i18n.language !== lng) {
+          void i18n.changeLanguage(lng);
+        }
         setIsAuthenticated(true);
       } catch (error) {
         console.log('User not authenticated');
@@ -60,7 +66,19 @@ export default function App() {
 
   const handleLogin = (userData: any) => {
     setUser(userData.data);
+    const lng = userData?.data?.language || 'en';
+    if (i18n.language !== lng) {
+      void i18n.changeLanguage(lng);
+    }
     setIsAuthenticated(true);
+  };
+
+  const handleUserUpdated = (updated: any) => {
+    setUser(updated);
+    const lng = updated?.language || 'en';
+    if (i18n.language !== lng) {
+      void i18n.changeLanguage(lng);
+    }
   };
 
   const handleLogout = async () => {
@@ -103,7 +121,7 @@ export default function App() {
       {!isAuthenticated ? (
         <LoginPage onLogin={handleLogin} />
       ) : (
-        <ChatInterface user={user} onLogout={handleLogout} />
+        <ChatInterface user={user} onLogout={handleLogout} onUserUpdated={handleUserUpdated} />
       )}
       <InstallPrompt />
       <Toaster />

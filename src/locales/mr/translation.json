@@ -47,7 +47,12 @@
     "emailAddress": "ईमेल पत्ता",
     "memberSince": "सदस्यपासून",
     "currentCredits": "सध्याचे क्रेडिट्स",
-    "addCredits": "क्रेडिट्स जोडा"
+    "addCredits": "क्रेडिट्स जोडा",
+    "language": "भाषा",
+    "language_en": "English",
+    "language_hi": "Hindi",
+    "language_gu": "Gujarati",
+    "language_mr": "Marathi"
   },
   "addCredits": {
     "title": "क्रेडिट्स जोडा",

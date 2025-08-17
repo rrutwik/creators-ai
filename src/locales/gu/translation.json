@@ -47,7 +47,12 @@
     "emailAddress": "ઇમેઇલ સરનામું",
     "memberSince": "સભ્ય ત્યારથી",
     "currentCredits": "વર્તમાન ક્રેડિટ્સ",
-    "addCredits": "ક્રેડિટ્સ ઉમેરો"
+    "addCredits": "ક્રેડિટ્સ ઉમેરો",
+    "language": "ભાષા",
+    "language_en": "English",
+    "language_hi": "Hindi",
+    "language_gu": "Gujarati",
+    "language_mr": "Marathi"
   },
   "addCredits": {
     "title": "ક્રેડિટ્સ ઉમેરો",

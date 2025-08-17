@@ -82,6 +82,7 @@ interface User {
     email: string;
     credits: number;
     createdAt: string;
+    language?: string; // ISO language code like 'en', 'hi', 'gu', 'mr'
 }
 
 interface Bot {

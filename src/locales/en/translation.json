@@ -47,7 +47,12 @@
     "emailAddress": "Email Address",
     "memberSince": "Member Since",
     "currentCredits": "Current Credits",
-    "addCredits": "Add Credits"
+    "addCredits": "Add Credits",
+    "language": "Language",
+    "language_en": "English",
+    "language_hi": "Hindi",
+    "language_gu": "Gujarati",
+    "language_mr": "Marathi"
   },
   "addCredits": {
     "title": "Add Credits",
