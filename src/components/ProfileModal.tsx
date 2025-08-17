@@ -6,25 +6,27 @@ import { Label } from './ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Badge } from './ui/badge';
 import { Separator } from './ui/separator';
-import { Edit, Mail, Calendar, Shield } from 'lucide-react';
+import { Edit, Mail, Calendar, Shield, Languages } from 'lucide-react';
 import type { User } from '../interfaces';
 import { avatarSrc } from '../utils';
-import { AddCreditsModal } from './AddCreditsModal';
 import { useTranslation } from 'react-i18next';
 import { updateProfile } from '../utils/api';
+import { SUPPORTED_LANGUAGES } from '../utils/consts';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
 interface ProfileModalProps {
   user: User | null;
+  language: string;
   onClose: () => void;
   onUserUpdated?: (user: User) => void;
 }
 
-export function ProfileModal({ user, onClose, onUserUpdated }: ProfileModalProps) {
+export function ProfileModal({ user, onClose, onUserUpdated, language: selectedLanguage }: ProfileModalProps) {
   const { t, i18n } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [displayName, setDisplayName] = useState(user?.first_name || '');
   const [showAddCredits, setShowAddCredits] = useState(false);
-  const [lang, setLang] = useState<string>(user?.language || 'en');
+  const [language, setLanguage] = useState<string>(user?.language || selectedLanguage);
 
   if (!user) return null;
 
@@ -41,20 +43,20 @@ export function ProfileModal({ user, onClose, onUserUpdated }: ProfileModalProps
       <DialogContent className="max-w-md w-full max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{t('profile.title')}</DialogTitle>
-          <DialogDescription>
+          <DialogDescription className='text-xs'>
             {t('profile.description')}
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="space-y-6">
           {/* Avatar Section */}
           <div className="flex flex-col items-center space-y-4">
-            <Avatar className="w-20 h-20">
+            <Avatar className="w-10 h-10">
               <AvatarImage src={avatarSrc(user?.avatar)} />
               <AvatarFallback className="text-xl">{user?.first_name?.charAt(0)}</AvatarFallback>
             </Avatar>
             <Badge variant="secondary" className="flex items-center gap-1">
-              <Shield className="w-3 h-3" />
+              <Shield className="w-2 h-2" />
               {t('profile.verifiedUser')}
             </Badge>
           </div>
@@ -121,31 +123,30 @@ export function ProfileModal({ user, onClose, onUserUpdated }: ProfileModalProps
               </div>
             </div>
 
-            <div className="space-y-3">
-              <Label htmlFor="language" className="flex items-center gap-2">
+            <div className="space-y-4">
+              <Label className="flex items-center gap-2">
+                <Languages className="w-4 h-4" />
                 {t('profile.language')}
               </Label>
-              <select
-                id="language"
-                value={lang}
-                onChange={async (e) => {
-                  const newLang = e.target.value;
-                  setLang(newLang);
-                  try {
-                    await updateProfile({ language: newLang });
-                  } catch (err) {
-                    // ignore errors in UI for now
-                  }
-                  void i18n.changeLanguage(newLang);
-                  onUserUpdated?.({ ...user, language: newLang });
-                }}
-                className="h-11 px-3 rounded-md border bg-background"
-              >
-                <option value="en">{t('profile.language_en')}</option>
-                <option value="hi">{t('profile.language_hi')}</option>
-                <option value="gu">{t('profile.language_gu')}</option>
-                <option value="mr">{t('profile.language_mr')}</option>
-              </select>
+              <Select value={language} onValueChange={async (newLang) => {
+                setLanguage(newLang);
+                try {
+                  await updateProfile({ language: newLang });
+                } catch (err) {
+                  // ignore errors in UI for now
+                }
+                void i18n.changeLanguage(newLang);
+                onUserUpdated?.({ ...user, language: newLang });
+              }}>
+                <SelectTrigger className="h-11">
+                  <SelectValue placeholder="Select language" defaultValue={language} />
+                </SelectTrigger>
+                <SelectContent>
+                  {SUPPORTED_LANGUAGES.map(lang => (
+                    <SelectItem key={lang.code} value={lang.code}>{t(`profile.language_${lang.code}`)}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
@@ -166,26 +167,6 @@ export function ProfileModal({ user, onClose, onUserUpdated }: ProfileModalProps
               <div className="text-xs text-muted-foreground">Questions Asked</div>
             </div>
           </div> */}
-
-          {/* Credits */}
-          <div className="space-y-3 pt-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">{t('profile.currentCredits')}</span>
-              <span className="text-base font-medium">{user.credits ?? 0}</span>
-            </div>
-            <Button className="w-full h-11 touch-manipulation" onClick={() => setShowAddCredits(true)}>
-              {t('profile.addCredits')}
-            </Button>
-          </div>
-
-          {showAddCredits && (
-            <AddCreditsModal
-              user={user}
-              open={showAddCredits}
-              onClose={() => setShowAddCredits(false)}
-            />
-          )}
-
           <div className="flex gap-3 pt-4">
             <Button variant="outline" className="flex-1 h-11 touch-manipulation" onClick={onClose}>
               {t('common.close')}

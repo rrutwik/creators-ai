@@ -8,15 +8,19 @@ import { AddCreditsModal } from './AddCreditsModal';
 import { getAvailableBots, getPastChats, getChat } from '../utils/api';
 import type { ChatDetails, ReligiousBot, User } from '../interfaces';
 import { useTranslation } from 'react-i18next';
+import type { THEME_MODES } from '../utils/consts';
 
 interface ChatInterfaceProps {
   user: User | null;
+  language: string;
+  theme: THEME_MODES;
+  setTheme: (theme: THEME_MODES) => void;
   onLogout: () => void;
   religiousBots?: ReligiousBot[];
   onUserUpdated?: (user: User) => void;
 }
 
-export function ChatInterface({ user, onLogout, onUserUpdated }: ChatInterfaceProps) {
+export function ChatInterface({ user, onLogout, onUserUpdated, theme, setTheme, language }: ChatInterfaceProps) {
   const { t } = useTranslation();
   const [religiousBots, setReligiousBots] = useState<ReligiousBot[]>([]);
   const [selectedBot, setSelectedBot] = useState<ReligiousBot | null>(null);
@@ -221,6 +225,10 @@ export function ChatInterface({ user, onLogout, onUserUpdated }: ChatInterfacePr
             setSelectedChat(chat);
             handleCloseSidebar();
           }}
+          onShowAddCredits={() => {
+            setShowAddCredits(true);
+            handleCloseSidebar();
+          }}
           onLogout={onLogout}
           collapsed={true}
           onToggleCollapse={handleCloseSidebar}
@@ -260,6 +268,7 @@ export function ChatInterface({ user, onLogout, onUserUpdated }: ChatInterfacePr
       {showProfile && (
         <ProfileModal
           user={user}
+          language={language}
           onClose={() => setShowProfile(false)}
           onUserUpdated={onUserUpdated}
         />
@@ -275,6 +284,8 @@ export function ChatInterface({ user, onLogout, onUserUpdated }: ChatInterfacePr
 
       {showSettings && (
         <SettingsModal
+          theme={theme}
+          setTheme={setTheme}
           onClose={() => setShowSettings(false)}
         />
       )}

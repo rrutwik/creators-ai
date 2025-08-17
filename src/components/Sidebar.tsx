@@ -5,7 +5,9 @@ import {
   Plus, 
   LogOut, 
   X,
-  MessageCircle
+  MessageCircle,
+  Settings,
+  PlusCircle
 } from 'lucide-react';
 import type { ChatDetails, ReligiousBot, User } from '../interfaces';
 import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar';
@@ -22,6 +24,7 @@ interface SidebarProps {
   onSelectChat: (chat: ChatDetails) => void;
   onShowProfile: () => void;
   onShowHistory: () => void;
+  onShowAddCredits: () => void;
   onShowSettings: () => void;
   onLogout: () => void;
   collapsed: boolean;
@@ -39,6 +42,7 @@ export function Sidebar({
   chatHistory,
   onShowProfile,
   onShowHistory,
+  onShowAddCredits,
   onShowSettings,
   onLogout,
   onToggleCollapse,
@@ -182,7 +186,7 @@ export function Sidebar({
             <History className="w-4 h-4 mb-1" />
             <span className="text-xs">History</span>
           </Button> */}
-          {/* <Button 
+          <Button 
             variant="ghost" 
             size="sm" 
             className="flex-col h-12 p-2 touch-manipulation" 
@@ -190,7 +194,16 @@ export function Sidebar({
           >
             <Settings className="w-4 h-4 mb-1" />
             <span className="text-xs">Settings</span>
-          </Button> */}
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="flex-col h-12 p-2 touch-manipulation" 
+            onClick={onShowAddCredits}
+          >
+            <PlusCircle className="w-4 h-4 mb-1" />
+            <span className="text-xs">{t('profile.addCredits')}</span>
+          </Button>
           <Button 
             variant="ghost" 
             size="sm" 

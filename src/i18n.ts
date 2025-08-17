@@ -12,7 +12,7 @@ type SupportedLang = typeof supportedLangs[number];
 
 const stored = typeof window !== 'undefined' ? localStorage.getItem('lang') : null;
 
-const browser = typeof navigator !== 'undefined' ? navigator.language?.split('-')[0] : 'en';
+const browser = typeof navigator !== 'undefined' ? navigator.language?.split('-')[0] : null;
 const fallbackLng: SupportedLang = 'en';
 const initialLng: string = stored || browser || fallbackLng;
 
@@ -44,7 +44,7 @@ i18n.on('languageChanged', (lng: string) => {
 
 // If there's no stored preference and browser language isn't supported,
 // attempt a lightweight geolocation-based default (non-blocking).
-if (!stored && !supportedLangs.includes(initialLng as SupportedLang)) {
+if (!stored) {
   (async () => {
     try {
       const res = await fetch('https://ipapi.co/json/');

@@ -49,10 +49,10 @@
     "currentCredits": "सध्याचे क्रेडिट्स",
     "addCredits": "क्रेडिट्स जोडा",
     "language": "भाषा",
-    "language_en": "English",
-    "language_hi": "Hindi",
-    "language_gu": "Gujarati",
-    "language_mr": "Marathi"
+    "language_en": "इंग्रजी",
+    "language_hi": "हिंदी",
+    "language_gu": "गुजराती",
+    "language_mr": "मराठी"
   },
   "addCredits": {
     "title": "क्रेडिट्स जोडा",

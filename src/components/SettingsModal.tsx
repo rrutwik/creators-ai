@@ -12,23 +12,23 @@ import {
   Sun, 
   Bell, 
   Shield, 
-  Languages, 
   Volume2, 
   Download,
   Trash2,
   Info
 } from 'lucide-react';
+import { type THEME_MODES } from '../utils/consts';
 
 interface SettingsModalProps {
   onClose: () => void;
+  theme: THEME_MODES;
+  setTheme: (theme: THEME_MODES) => void;
 }
 
-export function SettingsModal({ onClose }: SettingsModalProps) {
-  const [darkMode, setDarkMode] = useState(false);
+export function SettingsModal({ onClose, theme, setTheme }: SettingsModalProps) {
   const [notifications, setNotifications] = useState(true);
   const [soundEffects, setSoundEffects] = useState(true);
   const [autoSave, setAutoSave] = useState(true);
-  const [language, setLanguage] = useState('english');
   const [dataRetention, setDataRetention] = useState('1year');
 
   return (
@@ -44,9 +44,9 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
         <Tabs defaultValue="appearance" className="w-full flex-1 overflow-hidden flex flex-col">
           <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto">
             <TabsTrigger value="appearance" className="h-11 text-xs sm:text-sm">Appearance</TabsTrigger>
-            <TabsTrigger value="notifications" className="h-11 text-xs sm:text-sm">Notifications</TabsTrigger>
-            <TabsTrigger value="privacy" className="h-11 text-xs sm:text-sm">Privacy</TabsTrigger>
-            <TabsTrigger value="data" className="h-11 text-xs sm:text-sm">Data</TabsTrigger>
+            {/* <TabsTrigger disabled={true} onMouseEnter={() => {}} onMouseLeave={() => {}} value="notifications" className="h-11 text-xs sm:text-sm">Notifications</TabsTrigger>
+            <TabsTrigger disabled={true} value="privacy" className="h-11 text-xs sm:text-sm">Privacy</TabsTrigger>
+            <TabsTrigger disabled={true} value="data" className="h-11 text-xs sm:text-sm">Data</TabsTrigger> */}
           </TabsList>
           
           <div className="flex-1 overflow-y-auto">
@@ -57,39 +57,19 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
                 <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
                   <div className="space-y-1 flex-1">
                     <Label className="flex items-center gap-2">
-                      {darkMode ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+                      {theme === 'dark' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
                       Dark Mode
                     </Label>
                     <p className="text-sm text-muted-foreground">
                       Switch between light and dark themes
                     </p>
                   </div>
-                  <Switch checked={darkMode} onCheckedChange={setDarkMode} />
+                  <Switch checked={theme === 'dark'} onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')} />
                 </div>
 
-                <Separator />
+                <Separator className='hidden'/>
 
-                <div className="space-y-4">
-                  <Label className="flex items-center gap-2">
-                    <Languages className="w-4 h-4" />
-                    Language
-                  </Label>
-                  <Select value={language} onValueChange={setLanguage}>
-                    <SelectTrigger className="h-11">
-                      <SelectValue placeholder="Select language" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="english">English</SelectItem>
-                      <SelectItem value="spanish">Español</SelectItem>
-                      <SelectItem value="french">Français</SelectItem>
-                      <SelectItem value="arabic">العربية</SelectItem>
-                      <SelectItem value="hindi">हिन्दी</SelectItem>
-                      <SelectItem value="hebrew">עברית</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
+                <div className="hidden flex items-center justify-between p-4 bg-muted rounded-lg">
                   <div className="space-y-1 flex-1">
                     <Label className="flex items-center gap-2">
                       <Volume2 className="w-4 h-4" />
