@@ -209,36 +209,54 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, sidebar
             </div>
           ))}
 
-          
+          {isTyping && (
+            <div className="flex justify-start">
+              <div className="flex space-x-3 max-w-[85%] sm:max-w-[80%]">
+                <Avatar className="w-8 h-8 flex-shrink-0">
+                  <AvatarFallback className="text-lg">
+                    {selectedBot.avatar}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="bg-muted text-foreground px-4 py-3 rounded-2xl">
+                  <div className="flex space-x-1">
+                    <div className="w-2 h-2 bg-current rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                    <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
-        <div ref={messagesEndRef} />
-      </div>
-    </ScrollArea>
 
-    {/* Input */}
-    <div className="p-4 border-t border-border bg-card flex-shrink-0">
-      <div className="flex space-x-3">
-        <Input
-          ref={inputRef}
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          onKeyPress={handleKeyPress}
-          placeholder={t('chat.placeholder', { name: selectedBot.name })}
-          className="flex-1 h-12 text-base touch-manipulation"
-          disabled={isTyping}
-        />
-        <Button
-          onClick={handleSendMessage}
-          disabled={!inputValue.trim() || isTyping}
-          className="h-12 px-4 touch-manipulation"
-        >
-          <Send className="w-4 h-4" />
-        </Button>
+          <div ref={messagesEndRef} />
+        </div>
+      </ScrollArea>
+
+      {/* Input */}
+      <div className="p-4 border-t border-border bg-card flex-shrink-0">
+        <div className="flex space-x-3">
+          <Input
+            ref={inputRef}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder={t('chat.placeholder', { name: selectedBot.name })}
+            className="flex-1 h-12 text-base touch-manipulation"
+            disabled={isTyping}
+          />
+          <Button
+            onClick={handleSendMessage}
+            disabled={!inputValue.trim() || isTyping}
+            className="h-12 px-4 touch-manipulation"
+          >
+            <Send className="w-4 h-4" />
+          </Button>
+        </div>
+        <p className="text-xs text-muted-foreground mt-3 text-center px-2">
+          {t('chat.disclaimer')}
+        </p>
       </div>
-      <p className="text-xs text-muted-foreground mt-3 text-center px-2">
-        {t('chat.disclaimer')}
-      </p>
     </div>
-  </div>
-);
+  );
 }
