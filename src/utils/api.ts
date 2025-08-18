@@ -32,17 +32,17 @@ async function refreshAccessToken() {
         setAccessToken(response.data.data.sessionToken);
         setRefreshToken(response.data.data.refreshToken);
     } catch (error) {
-        console.error('Error refreshing access token:', error);
         throw new Error('Session refresh failed');
     }
 }
 
-export const getUserDetails = async () => {
+export const getUserDetails = async (suppressReloadOnAuthFail: boolean = false) => {
     try {
-        const axiosInstance = getAuthenticatedAxiosInstance();
-        console.log("Calling getUserDetails")
-        const response = await axiosInstance.get('/auth/me');
-        return response.data; // Assuming the user data is returned directly
+        const response = await handleRequest<{ data: User }>(
+            () => getAuthenticatedAxiosInstance().get('/auth/me'),
+            { suppressReloadOnAuthFail }
+        );
+        return response.data;
     } catch (error) {
         console.error('Failed to fetch user details:', error);
         throw error;
@@ -62,21 +62,29 @@ export const logout = async () => {
     }
 };
 
-async function handleRequest<T>(requestFunc: () => Promise<AxiosResponse<T>>): Promise<T> {
+async function handleRequest<T>(
+    requestFunc: () => Promise<AxiosResponse<T>>,
+    options?: { suppressReloadOnAuthFail?: boolean }
+): Promise<T> {
     try {
         const response = await requestFunc();
         return response.data;
     } catch (error) {
         if (axios.isAxiosError(error) && error.response?.status === 401) {
-            // If the token is expired or invalid, try to refresh it
             try {
                 await refreshAccessToken();
                 const response = await requestFunc();
                 return response.data;
             } catch (refreshError) {
                 console.error('Error refreshing access token:', refreshError);
-                logout();
+                console.log({
+                    options,
+                    error
+                })
+                if (!options?.suppressReloadOnAuthFail) {
+                    logout();
                 window.location.reload();
+                }
                 throw refreshError;
             }
         } else {
@@ -90,7 +98,7 @@ export const loginWithGoogle = (data: {}) => {
 };
 
 export const getPastChats = async (offset: number, limit: number) => {
-    const data = await handleRequest<{data: {records: ChatDetails[], total: number}}>(() =>
+    const data = await handleRequest<{ data: { records: ChatDetails[], total: number } }>(() =>
         getAuthenticatedAxiosInstance().get('/chat', { params: { offset, limit } })
     );
     return {
@@ -119,13 +127,13 @@ export const getChat = (chatId: string) => {
 };
 
 export const sendMessage = (message: string, chatUUID?: string, chatbot_id?: string) => {
-    return handleRequest<{message: string, data: ChatSession}>(() =>
+    return handleRequest<{ message: string, data: ChatSession }>(() =>
         getAuthenticatedAxiosInstance().post(`/chat/message`, { chat_id: chatUUID, message, chatbot_id })
     );
 };
 
 export const getAvailableBots = async () => {
-    return handleRequest<{records: ReligiousBot[], total: number}>(() =>
+    return handleRequest<{ records: ReligiousBot[], total: number }>(() =>
         getAuthenticatedAxiosInstance().get('/chatbots')
     );
 }
@@ -136,4 +144,3 @@ export const updateProfile = (body: Partial<User>) => {
         getAuthenticatedAxiosInstance().put('/user/profile', body)
     );
 };
-

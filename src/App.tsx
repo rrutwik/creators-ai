@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { LoginPage } from './components/LoginPage';
 import { ChatInterface } from './components/ChatInterface';
 import { InstallPrompt } from './components/InstallPrompt';
@@ -15,9 +15,10 @@ import { initGA, setUser as setAnalyticsUser, trackLogin, clearUser } from './an
 
 export default function App() {
   const { t } = useTranslation();
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null); // null = loading
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [language, setLanguage] = useState<string>(i18n.language);
+  const hasCheckedAuth = useRef(false);
   const [theme, setTheme] = useState<THEME_MODES>(() => {
     const saved = localStorage.getItem('theme');
     if (saved === 'light' || saved === 'dark') return saved as THEME_MODES;
@@ -25,28 +26,29 @@ export default function App() {
     return prefersDark ? 'dark' : 'light';
   });
 
-  // Check authentication on app load
   useEffect(() => {
+    if (hasCheckedAuth.current) return;
+    hasCheckedAuth.current = true;
     const checkAuth = async () => {
       try {
-        const userData = await getUserDetails();
-        setUser(userData.data);
-        const lng = userData?.data?.language || 'en';
+        const userData = await getUserDetails(true);
+        setUser(userData);
+        const lng = userData.language || 'en';
         if (i18n.language !== lng) {
           void i18n.changeLanguage(lng);
         }
         // GA4: set user for restored sessions
         setAnalyticsUser({
-          id: (userData.data as any).id,
-          email: userData.data.email,
-          language: (userData.data as any).language,
-          first_name: (userData.data as any).first_name,
-          last_name: (userData.data as any).last_name,
-          credits: (userData.data as any).credits,
+          id: userData._id,
+          email: userData.email,
+          language: userData.language,
+          first_name: userData.first_name,
+          last_name: userData.last_name,
+          credits: userData.credits,
         });
         setIsAuthenticated(true);
       } catch (error) {
-        console.log('User not authenticated');
+        console.log('User not authenticated, removing cookies', error);
         setIsAuthenticated(false);
         Cookies.remove('session_token');
         Cookies.remove('refresh_token');
@@ -78,10 +80,11 @@ export default function App() {
     localStorage.setItem('theme', theme);
   }, [theme]);
 
-  const handleLogin = (userData: any) => {
-    setUser(userData.data);
-    if (userData?.data?.language) {
-      const lng = userData.data.language;
+  const handleLogin = (userData: User) => {
+    if (!userData) return;
+    setUser(userData);
+    if (userData?.language) {
+      const lng = userData.language;
       if (i18n.language !== lng) {
         void i18n.changeLanguage(lng);
       }
@@ -94,12 +97,12 @@ export default function App() {
     // GA4: login event + set user
     trackLogin('google');
     setAnalyticsUser({
-      id: (userData.data as any).id,
-      email: userData.data.email,
-      language: (userData.data as any).language,
-      first_name: (userData.data as any).first_name,
-      last_name: (userData.data as any).last_name,
-      credits: (userData.data as any).credits,
+      id: userData._id,
+      email: userData.email,
+      language: userData.language,
+      first_name: userData.first_name,
+      last_name: userData.last_name,
+      credits: userData.credits,
     });
   };
 
@@ -119,10 +122,9 @@ export default function App() {
     } finally {
       setUser(null);
       setIsAuthenticated(false);
-      // Clear tokens as fallback
+      console.log('handleLogout Removing cookies');
       Cookies.remove('session_token');
       Cookies.remove('refresh_token');
-      // GA4: clear user identity
       clearUser();
     }
   };

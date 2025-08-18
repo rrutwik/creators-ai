@@ -5,9 +5,10 @@ import { useState } from 'react';
 import { getUserDetails, loginWithGoogle } from '../utils/api';
 import { GoogleLoginComponent } from './login/GoogleLogin';
 import { useTranslation } from 'react-i18next';
+import type { User } from '../interfaces';
 
 interface LoginPageProps {
-  onLogin: (user: any) => void;
+  onLogin: (user: User) => void;
 }
 
 export function LoginPage({ onLogin }: LoginPageProps) {
@@ -19,7 +20,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
       const { data } = await loginWithGoogle(response);
       Cookies.set('session_token', data.sessionToken, { expires: 1 });
       Cookies.set('refresh_token', data.refreshToken, { expires: 1 });
-      const user = await getUserDetails();
+      const user = await getUserDetails(true);
       onLogin(user);
     } catch (error) {
       console.error('Login failed:', error);
