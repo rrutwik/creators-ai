@@ -25,7 +25,7 @@ export function AddCreditsModal({ user, open, onClose }: AddCreditsModalProps) {
     amount,
     `Add ${creditsToAdd} credits | ${user.email}`
   );
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(upiUrl)}`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(upiUrl).replace(/%26/g, '%2526')}`;
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -54,8 +54,10 @@ export function AddCreditsModal({ user, open, onClose }: AddCreditsModalProps) {
                 step={2}
                 value={creditsToAdd}
                 onChange={(e) => {
-                  const v = parseInt(e.target.value, 10);
-                  // check if the value is between minimum and maximum
+                  let v = parseInt(e.target.value, 10);
+                  if (v % 2 !== 0) {
+                    v = Math.round(v / 2);
+                  }
                   if (v < minimumCredits) {
                     setCreditsToAdd(minimumCredits);
                   } else if (v > maximumCredits) {
