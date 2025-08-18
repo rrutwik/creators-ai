@@ -24,14 +24,13 @@ const getAuthenticatedAxiosInstance = (): AxiosInstance => {
     });
 };
 
-async function refreshAccessToken(): Promise<boolean> {
+async function refreshAccessToken() {
     const refreshToken = getRefreshToken();
     if (!refreshToken) throw new Error('No refresh token available');
     try {
-        const response = await axios.post(`${BASE_URL}/auth/refresh_token`, { refreshToken });
+        const response = await axios.post(`${BASE_URL}/auth/refresh_token`, { refresh_token: refreshToken });
         setAccessToken(response.data.data.sessionToken);
         setRefreshToken(response.data.data.refreshToken);
-        return checkAuthentication();
     } catch (error) {
         console.error('Error refreshing access token:', error);
         throw new Error('Session refresh failed');
@@ -47,24 +46,6 @@ export const getUserDetails = async () => {
     } catch (error) {
         console.error('Failed to fetch user details:', error);
         throw error;
-    }
-};
-
-export const checkAuthentication = async (): Promise<boolean> => {
-    try {
-        await getUserDetails();
-        return true;
-    } catch (error) {
-        if (axios.isAxiosError(error) && error.response?.status === 401) {
-            try {
-                const response = await refreshAccessToken();
-                return response;
-            } catch (refreshError) {
-                return false;
-            }
-        } else {
-            throw error;
-        }
     }
 };
 
@@ -88,9 +69,16 @@ async function handleRequest<T>(requestFunc: () => Promise<AxiosResponse<T>>): P
     } catch (error) {
         if (axios.isAxiosError(error) && error.response?.status === 401) {
             // If the token is expired or invalid, try to refresh it
-            await refreshAccessToken();
-            const response = await requestFunc(); // Retry the original request with the new token
-            return response.data;
+            try {
+                await refreshAccessToken();
+                const response = await requestFunc();
+                return response.data;
+            } catch (refreshError) {
+                console.error('Error refreshing access token:', refreshError);
+                logout();
+                window.location.reload();
+                throw refreshError;
+            }
         } else {
             throw error;
         }

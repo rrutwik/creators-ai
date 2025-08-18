@@ -18,6 +18,7 @@ export function AddCreditsModal({ user, open, onClose }: AddCreditsModalProps) {
   // User now inputs rupees; credits are derived as rupees * 2
   const [rupeesToPay, setRupeesToPay] = useState<number>(50);
   const [confirmed, setConfirmed] = useState<boolean>(false);
+  const [qrLoading, setQrLoading] = useState<boolean>(true);
   const minimumRupees = 5;
   const maximumRupees = 2500;
   useEffect(() => {
@@ -26,6 +27,7 @@ export function AddCreditsModal({ user, open, onClose }: AddCreditsModalProps) {
       setRupeesToPay(50);
     }
   }, [open]);
+
   const creditsFromAmount = useMemo(() => rupeesToPay * 2, [rupeesToPay]);
   const upiUrl = useMemo(() => {
     const amount = rupeesToPay;
@@ -39,6 +41,10 @@ export function AddCreditsModal({ user, open, onClose }: AddCreditsModalProps) {
   const qrUrl = useMemo(() => (
     `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(upiUrl)}`
   ), [upiUrl]);
+
+  useEffect(() => {
+    setQrLoading(true);
+  }, [qrUrl]);
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -136,7 +142,17 @@ export function AddCreditsModal({ user, open, onClose }: AddCreditsModalProps) {
             <div className="space-y-3">
               <Label>{t('addCredits.payViaUpi')}</Label>
               <div className="flex flex-col items-center gap-3">
-                <img src={qrUrl} alt="UPI QR Code" className="w-44 h-44 rounded-md border" />
+                {qrLoading && (
+                  <div className="w-44 h-44 rounded-md border bg-muted animate-pulse" aria-hidden />
+                )}
+                <img
+                  src={qrUrl}
+                  alt="UPI QR Code"
+                  className={`w-44 h-44 rounded-md border ${qrLoading ? 'hidden' : ''}`}
+                  onLoad={() => setQrLoading(false)}
+                  onError={() => setQrLoading(false)}
+                  aria-busy={qrLoading}
+                />
                 <div className="flex gap-2 w-full">
                   <Button
                     className="flex-1 h-11"
@@ -150,7 +166,7 @@ export function AddCreditsModal({ user, open, onClose }: AddCreditsModalProps) {
                     onClick={async () => {
                       try {
                         await navigator.clipboard.writeText(upiUrl);
-                      } catch {}
+                      } catch { }
                     }}
                   >
                     {t('addCredits.copyLink')}

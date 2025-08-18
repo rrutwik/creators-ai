@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import i18n from './i18n';
 import type { THEME_MODES } from './utils/consts';
 import { LanguageSwitcher } from './components/LanguageSwitcher';
+import { initGA, setUser as setAnalyticsUser, trackLogin, clearUser } from './analytics';
 
 export default function App() {
   const { t } = useTranslation();
@@ -30,11 +31,19 @@ export default function App() {
       try {
         const userData = await getUserDetails();
         setUser(userData.data);
-        // Apply user preferred language if present
         const lng = userData?.data?.language || 'en';
         if (i18n.language !== lng) {
           void i18n.changeLanguage(lng);
         }
+        // GA4: set user for restored sessions
+        setAnalyticsUser({
+          id: (userData.data as any).id,
+          email: userData.data.email,
+          language: (userData.data as any).language,
+          first_name: (userData.data as any).first_name,
+          last_name: (userData.data as any).last_name,
+          credits: (userData.data as any).credits,
+        });
         setIsAuthenticated(true);
       } catch (error) {
         console.log('User not authenticated');
@@ -53,6 +62,11 @@ export default function App() {
     setupInstallPrompt();
   }, []);
 
+  // Initialize Google Analytics (react-ga4)
+  useEffect(() => {
+    initGA();
+  }, []);
+
   // Apply theme to <html> and persist
   useEffect(() => {
     const root = document.documentElement;
@@ -63,7 +77,6 @@ export default function App() {
     }
     localStorage.setItem('theme', theme);
   }, [theme]);
-
 
   const handleLogin = (userData: any) => {
     setUser(userData.data);
@@ -77,6 +90,17 @@ export default function App() {
     }
     
     setIsAuthenticated(true);
+
+    // GA4: login event + set user
+    trackLogin('google');
+    setAnalyticsUser({
+      id: (userData.data as any).id,
+      email: userData.data.email,
+      language: (userData.data as any).language,
+      first_name: (userData.data as any).first_name,
+      last_name: (userData.data as any).last_name,
+      credits: (userData.data as any).credits,
+    });
   };
 
   const handleUserUpdated = (updated: any) => {
@@ -98,6 +122,8 @@ export default function App() {
       // Clear tokens as fallback
       Cookies.remove('session_token');
       Cookies.remove('refresh_token');
+      // GA4: clear user identity
+      clearUser();
     }
   };
 
