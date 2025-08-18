@@ -14,8 +14,8 @@
     "history": "History"
   },
   "theme": {
-    "dark": "🌙 Dark",
-    "light": "☀️ Light"
+    "dark": " Dark",
+    "light": " Light"
   },
   "login": {
     "welcomeTitle": "Welcome to CreatorsAI",
@@ -59,11 +59,16 @@
     "description": "Purchase chat credits. Payments may take up to 5 hours to reflect in your account.",
     "currentCredits": "Current Credits",
     "creditsToAdd": "Credits to add",
-    "rate": "Rate: ₹0.50 per credit. Enter an even number (min 2).",
+    "amountLabel": "Amount ()",
+    "rate": "Rate: 0.50 per credit. Minimum 5.",
+    "creditMeaning": "Each credit lets you send one heartfelt message to your beloved deity.",
     "payViaUpi": "Pay via UPI",
     "openUpiApp": "Open UPI App",
     "copyLink": "Copy Link",
-    "payingWillAdd": "Paying ₹{{amount}} will add {{credits}} credits to {{email}}. It can take up to 5 hours to reflect."
+    "payingWillAdd": "Paying ₹{{amount}} will add {{credits}} credits to {{email}}. It can take up to 5 hours to reflect.",
+    "generateQr": "Generate QR",
+    "mostPopular": "Most popular",
+    "minMax": "Minimum ₹{{min}}, maximum ₹{{max}}"
   },
   "historyModal": {
     "title": "Chat History",

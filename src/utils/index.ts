@@ -27,12 +27,5 @@ export const avatarSrc = (avatar: unknown): string | undefined => {
   */
  export function generateUpiUrl(upiId: string, name: string, amount: number, note: string): string {
   const safeAmount = Math.max(0, Number.isFinite(amount) ? amount : 0);
-  // Encode each parameter individually and maintain parameter order
-  const params = new URLSearchParams();
-  params.append('pa', upiId);
-  params.append('pn', name);
-  params.append('tn', note);
-  params.append('am', safeAmount.toString());
-  params.append('cu', 'INR');
-  return `upi://pay?${params.toString()}`;
+  return `upi://pay?pa=${upiId}&pn=${name}&tn=${note}&am=${safeAmount}&cu=INR`;
 }

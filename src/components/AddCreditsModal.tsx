@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -15,17 +15,30 @@ interface AddCreditsModalProps {
 
 export function AddCreditsModal({ user, open, onClose }: AddCreditsModalProps) {
   const { t } = useTranslation();
-  const [creditsToAdd, setCreditsToAdd] = useState<number>(10);
-  const minimumCredits = 2;
-  const maximumCredits = 2500;
-  const amount = Number((Math.max(0, creditsToAdd) / 2).toFixed(2)); // ₹ = credits / 2
-  const upiUrl = generateUpiUrl(
-    'rutwik2808-1@okaxis',
-    'CreatorsAI',
-    amount,
-    `Add ${creditsToAdd} credits | ${user.email}`
-  );
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(upiUrl).replace(/%26/g, '%2526')}`;
+  // User now inputs rupees; credits are derived as rupees * 2
+  const [rupeesToPay, setRupeesToPay] = useState<number>(50);
+  const [confirmed, setConfirmed] = useState<boolean>(false);
+  const minimumRupees = 5;
+  const maximumRupees = 2500;
+  useEffect(() => {
+    if (!open) {
+      setConfirmed(false);
+      setRupeesToPay(50);
+    }
+  }, [open]);
+  const creditsFromAmount = useMemo(() => rupeesToPay * 2, [rupeesToPay]);
+  const upiUrl = useMemo(() => {
+    const amount = rupeesToPay;
+    return generateUpiUrl(
+      'rutwik2808-1@okaxis',
+      'CreatorsAI',
+      amount,
+      `Add ${creditsFromAmount} credits | ${user.email}`
+    );
+  }, [rupeesToPay, creditsFromAmount, user.email]);
+  const qrUrl = useMemo(() => (
+    `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(upiUrl)}`
+  ), [upiUrl]);
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -44,40 +57,82 @@ export function AddCreditsModal({ user, open, onClose }: AddCreditsModalProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="creditsToAdd">{t('addCredits.creditsToAdd')}</Label>
+            <Label htmlFor="rupeesToPay">{t('addCredits.amountLabel')}</Label>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {[50, 100, 500].map((amt) => (
+                <div key={amt} className="flex-1 min-w-[80px]">
+                  <Button
+                    variant={rupeesToPay === amt ? 'default' : 'outline'}
+                    type="button"
+                    onClick={() => setRupeesToPay(amt)}
+                    className="w-full"
+                    aria-pressed={rupeesToPay === amt}
+                    disabled={confirmed}
+                  >
+                    ₹{amt}
+                  </Button>
+                  {amt === 100 && !confirmed && (
+                    <div className="mt-1 text-center text-[10px] text-primary">
+                      {t('addCredits.mostPopular')}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
             <div className="flex gap-2">
               <Input
-                id="creditsToAdd"
+                id="rupeesToPay"
                 type="number"
-                min={minimumCredits}
-                max={maximumCredits}
-                step={2}
-                value={creditsToAdd}
+                min={minimumRupees}
+                max={maximumRupees}
+                step={1}
+                value={rupeesToPay}
                 onChange={(e) => {
-                  let v = parseInt(e.target.value, 10);
-                  if (v % 2 !== 0) {
-                    v = Math.round(v / 2);
-                  }
-                  if (v < minimumCredits) {
-                    setCreditsToAdd(minimumCredits);
-                  } else if (v > maximumCredits) {
-                    setCreditsToAdd(maximumCredits);
-                  } else {
-                    setCreditsToAdd(v);
+                  const value = e.target.value;
+                  if (value === '' || /^\d+$/.test(value)) {
+                    const num = value === '' ? 0 : parseInt(value, 10);
+                    if (num < minimumRupees) {
+                      setRupeesToPay(minimumRupees);
+                    } else if (num > maximumRupees) {
+                      setRupeesToPay(maximumRupees);
+                    } else {
+                      setRupeesToPay(num);
+                    }
                   }
                 }}
+                onBlur={(e) => {
+                  if (e.target.value === '') setRupeesToPay(minimumRupees);
+                }}
                 className="h-11"
+                disabled={confirmed}
               />
               <div className="flex items-center px-3 rounded-md bg-muted text-sm whitespace-nowrap">
-                ₹ {Math.max(0, creditsToAdd) / 2}
+                {creditsFromAmount} credits
               </div>
             </div>
             <p className="text-xs text-muted-foreground">
               {t('addCredits.rate')}
             </p>
+            <p className="text-xs text-muted-foreground">
+              {t('addCredits.creditMeaning')}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {t('addCredits.minMax', { min: minimumRupees, max: maximumRupees })}
+            </p>
+            {!confirmed && (
+              <div className="pt-1">
+                <Button
+                  className="h-11 w-full"
+                  onClick={() => setConfirmed(true)}
+                  disabled={rupeesToPay < minimumRupees || rupeesToPay > maximumRupees}
+                >
+                  {t('addCredits.generateQr')}
+                </Button>
+              </div>
+            )}
           </div>
 
-          {creditsToAdd > 0 && (
+          {confirmed && (
             <div className="space-y-3">
               <Label>{t('addCredits.payViaUpi')}</Label>
               <div className="flex flex-col items-center gap-3">
@@ -102,7 +157,7 @@ export function AddCreditsModal({ user, open, onClose }: AddCreditsModalProps) {
                   </Button>
                 </div>
                 <div className="text-xs text-muted-foreground text-center">
-                  {t('addCredits.payingWillAdd', { amount, credits: creditsToAdd, email: user.email })}
+                  {t('addCredits.payingWillAdd', { amount: rupeesToPay, credits: creditsFromAmount, email: user.email })}
                 </div>
               </div>
             </div>
