@@ -9,6 +9,7 @@ import { getAvailableBots, getPastChats, getChat } from '../utils/api';
 import type { ChatDetails, ReligiousBot, User } from '../interfaces';
 import { useTranslation } from 'react-i18next';
 import type { THEME_MODES } from '../utils/consts';
+import i18n from '../i18n';
 
 interface ChatInterfaceProps {
   user: User | null;
@@ -62,7 +63,7 @@ export function ChatInterface({ user, onLogout, onUserUpdated, theme, setTheme, 
     };
     
     fetchBots();
-  }, []);
+  }, [i18n.language]);
 
   useEffect(() => {
     console.log("Selected Bot: ", selectedBot);
