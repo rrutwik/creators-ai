@@ -3,26 +3,28 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { ScrollArea } from './ui/scroll-area';
 import { Avatar, AvatarFallback } from './ui/avatar';
-import { Send, Menu, MoreVertical, Sparkles, ArrowLeft } from 'lucide-react';
+import { Send, Menu, MoreVertical, Sparkles, ArrowLeft, LogOut } from 'lucide-react';
 import { MessageRole, type ChatDetails, type ChatMessage, type ChatSession, type ReligiousBot } from '../interfaces';
 import { getChat, sendMessage } from '../utils/api';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from './ui/dropdown-menu';
 
 interface ChatWindowProps {
   selectedBot: ReligiousBot;
   selectedChat: ChatDetails | null;
   onToggleSidebar: () => void;
+  onLogout: () => void;
   onMessageSent: (sessionUuid: string) => void;
   sidebarOpen: boolean;
+  isMobile: boolean;
   onRequireAddCredits: () => void;
 }
 
-export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, sidebarOpen, onMessageSent, onRequireAddCredits }: ChatWindowProps) {
+export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogout, isMobile, sidebarOpen, onMessageSent, onRequireAddCredits }: ChatWindowProps) {
   const { t } = useTranslation();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [chatSession, setChatSession] = useState<ChatSession | null>(null);
-
 
   useEffect(() => {
     if (!selectedChat) return;
@@ -137,14 +139,14 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, sidebar
       {/* Header */}
       <div className="p-4 border-b border-border bg-card flex items-center justify-between min-h-[72px] flex-shrink-0">
         <div className="flex items-center space-x-3 min-w-0 flex-1">
-          <Button
+          {isMobile && <Button
             variant="ghost"
             size="icon"
             onClick={() => onToggleSidebar()}
             className="w-10 h-10 touch-manipulation flex-shrink-0"
           >
             {sidebarOpen ? <ArrowLeft className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </Button>
+          </Button>}
           <span className="text-2xl flex-shrink-0" title={selectedBot.greeting}>{selectedBot.avatar}</span>
           <div className="min-w-0 flex-1">
             <h2 className="font-semibold truncate text-base" title={selectedBot.greeting}>{selectedBot.name}</h2>
@@ -159,6 +161,18 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, sidebar
           <Button variant="ghost" size="icon" className="w-10 h-10 touch-manipulation">
             <MoreVertical className="w-4 h-4" />
           </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="w-10 h-10 touch-manipulation">
+                <MoreVertical className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem variant="destructive" onSelect={onLogout}>
+                <LogOut className="w-4 h-4" /> {t('common.logout')}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 

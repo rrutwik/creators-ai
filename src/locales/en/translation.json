@@ -27,6 +27,7 @@
     "welcomeTitle": "Welcome to Spiritual Guidance",
     "welcomeBody": "Select a spiritual guide from the sidebar to begin your journey of wisdom and enlightenment.",
     "chooseGuide": "Choose a Guide",
+    "chooseAGuideFromLeft": "Choose a guide from the left sidebar",
     "placeholder": "Ask {{name}} for spiritual guidance...",
     "disclaimer": "AI responses are based on religious texts and traditions. Always consult religious authorities for important spiritual matters."
   },

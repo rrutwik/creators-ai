@@ -36,12 +36,10 @@ export function ChatInterface({ user, onLogout, onUserUpdated, theme, setTheme, 
   const [showAddCredits, setShowAddCredits] = useState(false);
   const scrollYRef = useRef(0);
 
-  // Check if device is mobile
   useEffect(() => {
     const checkIfMobile = () => {
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
-      // Auto-collapse sidebar on mobile
       if (mobile) {
         setSidebarOpen(false);
       }
@@ -61,7 +59,7 @@ export function ChatInterface({ user, onLogout, onUserUpdated, theme, setTheme, 
         console.error('Failed to fetch bots:', error);
       }
     };
-    
+
     fetchBots();
   }, [i18n.language]);
 
@@ -71,54 +69,49 @@ export function ChatInterface({ user, onLogout, onUserUpdated, theme, setTheme, 
   }, [selectedBot, selectedChat]);
 
   const handleToggleSidebar = () => {
-    console.log("Sidebar Open: ", sidebarOpen);
     setSidebarOpen(!sidebarOpen);
   };
 
   const handleCloseSidebar = () => {
-    if (isMobile) {
-      setSidebarOpen(false);
-    }
+    setSidebarOpen(false);
   };
 
-  // Prevent background (chat) scrolling when mobile sidebar is open
-  useEffect(() => {
-    const body = document.body;
-    if (isMobile && sidebarOpen) {
-      // Save current scroll position and lock body
-      scrollYRef.current = window.scrollY || window.pageYOffset || 0;
-      body.style.position = 'fixed';
-      body.style.top = `-${scrollYRef.current}px`;
-      body.style.left = '0';
-      body.style.right = '0';
-      body.style.width = '100%';
-      body.style.overflow = 'hidden';
-    } else {
-      // Restore body scroll
-      if (body.style.position === 'fixed') {
-        body.style.position = '';
-        body.style.top = '';
-        body.style.left = '';
-        body.style.right = '';
-        body.style.width = '';
-        body.style.overflow = '';
-        window.scrollTo(0, scrollYRef.current || 0);
-      }
-    }
+  // useEffect(() => {
+  //   const body = document.body;
+  //   if (isMobile && sidebarOpen) {
+  //     // Save current scroll position and lock body
+  //     scrollYRef.current = window.scrollY || window.pageYOffset || 0;
+  //     body.style.position = 'fixed';
+  //     body.style.top = `-${scrollYRef.current}px`;
+  //     body.style.left = '0';
+  //     body.style.right = '0';
+  //     body.style.width = '100%';
+  //     body.style.overflow = 'hidden';
+  //   } else {
+  //     // Restore body scroll
+  //     if (body.style.position === 'fixed') {
+  //       body.style.position = '';
+  //       body.style.top = '';
+  //       body.style.left = '';
+  //       body.style.right = '';
+  //       body.style.width = '';
+  //       body.style.overflow = '';
+  //       window.scrollTo(0, scrollYRef.current || 0);
+  //     }
+  //   }
 
-    // Cleanup on unmount
-    return () => {
-      if (body.style.position === 'fixed') {
-        body.style.position = '';
-        body.style.top = '';
-        body.style.left = '';
-        body.style.right = '';
-        body.style.width = '';
-        body.style.overflow = '';
-        window.scrollTo(0, scrollYRef.current || 0);
-      }
-    };
-  }, [isMobile, sidebarOpen]);
+  //   return () => {
+  //     if (body.style.position === 'fixed') {
+  //       body.style.position = '';
+  //       body.style.top = '';
+  //       body.style.left = '';
+  //       body.style.right = '';
+  //       body.style.width = '';
+  //       body.style.overflow = '';
+  //       window.scrollTo(0, scrollYRef.current || 0);
+  //     }
+  //   };
+  // }, [isMobile, sidebarOpen]);
 
   useEffect(() => {
     const fetchChatHistory = async () => {
@@ -138,7 +131,7 @@ export function ChatInterface({ user, onLogout, onUserUpdated, theme, setTheme, 
       // Fetch the updated chat session
       const response = await getChat(sessionUuid);
       const updatedChat = response.data;
-      
+
       const chatDetails: ChatDetails = {
         _id: updatedChat.uuid,
         name: updatedChat.name,
@@ -146,15 +139,15 @@ export function ChatInterface({ user, onLogout, onUserUpdated, theme, setTheme, 
         uuid: updatedChat.uuid,
         updatedAt: new Date().toISOString()
       };
-      
+
       if (!selectedChat) {
         setSelectedChat(chatDetails);
         setChatHistory(prev => [chatDetails, ...prev]);
       } else {
         // Update existing chat in history
-        setChatHistory(prev => 
-          prev.map(chat => 
-            chat.uuid === sessionUuid 
+        setChatHistory(prev =>
+          prev.map(chat =>
+            chat.uuid === sessionUuid
               ? { ...chat, updatedAt: new Date().toISOString() }
               : chat
           )
@@ -182,7 +175,7 @@ export function ChatInterface({ user, onLogout, onUserUpdated, theme, setTheme, 
     <div className="flex h-screen bg-background relative">
       {/* Mobile Overlay */}
       {isMobile && sidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={handleCloseSidebar}
         />
@@ -236,14 +229,16 @@ export function ChatInterface({ user, onLogout, onUserUpdated, theme, setTheme, 
           isMobile={isMobile}
         />
       </div>
-      
+
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 h-screen">
         {selectedBot ? (
-          <ChatWindow 
+          <ChatWindow
             selectedBot={selectedBot}
             selectedChat={selectedChat}
             onToggleSidebar={handleToggleSidebar}
+            onLogout={onLogout}
+            isMobile={isMobile}
             sidebarOpen={sidebarOpen}
             onMessageSent={handleMessageSent}
             onRequireAddCredits={() => user && setShowAddCredits(true)}
@@ -254,12 +249,12 @@ export function ChatInterface({ user, onLogout, onUserUpdated, theme, setTheme, 
               <div className="text-6xl mb-4">🙏</div>
               <h2 className="text-2xl font-semibold mb-2">{t('chat.welcomeTitle')}</h2>
               <p className="text-muted-foreground mb-4">{t('chat.welcomeBody')}</p>
-              <button
+              {isMobile ? <button
                 onClick={handleToggleSidebar}
                 className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
               >
                 {t('chat.chooseGuide')}
-              </button>
+              </button> : <p>{t('chat.chooseAGuideFromLeft')}</p>}
             </div>
           </div>
         )}
