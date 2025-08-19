@@ -27,6 +27,10 @@ export default function App() {
   });
 
   useEffect(() => {
+    initGA();
+  }, []);
+
+  useEffect(() => {
     if (hasCheckedAuth.current) return;
     hasCheckedAuth.current = true;
     const checkAuth = async () => {
@@ -62,11 +66,6 @@ export default function App() {
   useEffect(() => {
     registerServiceWorker();
     setupInstallPrompt();
-  }, []);
-
-  // Initialize Google Analytics (react-ga4)
-  useEffect(() => {
-    initGA();
   }, []);
 
   // Apply theme to <html> and persist
