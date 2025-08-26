@@ -42,11 +42,10 @@ export const setUser = (u: AnalyticsUser) => {
   runOrQueue(() => {
     // user_id
     ReactGA.gtag('config', GA_MEASUREMENT_ID, {
-      user_id: u.id ?? u.email,
+      user_id: u.id ?? u.email ?? 'unknown',
     });
     // user_properties
     ReactGA.gtag('set', 'user_properties', {
-      email: u.email,
       language: u.language,
       first_name: u.first_name,
       last_name: u.last_name,
@@ -63,11 +62,51 @@ export const clearUser = () => {
   runOrQueue(() => {
     ReactGA.gtag('config', GA_MEASUREMENT_ID, { user_id: undefined });
     ReactGA.gtag('set', 'user_properties', {
-      email: undefined,
       language: undefined,
       first_name: undefined,
       last_name: undefined,
       credits: undefined,
     });
   });
+};
+
+// Generic event helper + specific trackers for common funnels
+export const trackEvent = (name: string, params: Record<string, any> = {}) => {
+  runOrQueue(() => ReactGA.event(name as any, params));
+};
+
+export const trackPageView = (path?: string) => {
+  runOrQueue(() => {
+    if (path) ReactGA.send({ hitType: 'pageview', page: path } as any);
+    else ReactGA.send('pageview');
+  });
+};
+
+export const trackSignup = (method: string = 'google') => {
+  runOrQueue(() => ReactGA.event('sign_up' as any, { method }));
+};
+
+export const trackLogout = () => {
+  runOrQueue(() => ReactGA.event('logout' as any));
+};
+
+export const trackLanguageChange = (language: string) => {
+  runOrQueue(() => ReactGA.event('language_change' as any, { language }));
+};
+
+export const trackThemeChange = (theme: 'light' | 'dark') => {
+  runOrQueue(() => ReactGA.event('theme_change' as any, { theme }));
+};
+
+// PWA-related events
+export const trackPWAInstallPromptShown = () => {
+  runOrQueue(() => ReactGA.event('pwa_install_prompt_shown' as any));
+};
+
+export const trackPWAInstallOutcome = (outcome: 'accepted' | 'dismissed') => {
+  runOrQueue(() => ReactGA.event('pwa_install_prompt_outcome' as any, { outcome }));
+};
+
+export const trackPWAInstalled = () => {
+  runOrQueue(() => ReactGA.event('pwa_installed' as any));
 };

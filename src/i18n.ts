@@ -44,34 +44,34 @@ i18n.on('languageChanged', (lng: string) => {
 
 // If there's no stored preference and browser language isn't supported,
 // attempt a lightweight geolocation-based default (non-blocking).
-if (!stored) {
-  (async () => {
-    try {
-      const res = await fetch('https://ipapi.co/json/');
-      if (!res.ok) return;
-      const data: any = await res.json();
-      const country: string | undefined = data?.country;
-      const region: string = (data?.region_code || data?.region || '').toUpperCase();
-      // Regional mapping within India
-      // Reference ISO 3166-2:IN codes commonly used by ip providers (e.g., UP, MH, GJ, DL, RJ, MP, BR, HR, UT, HP, JH, CT, JK, CH)
-      let geoLang: SupportedLang = 'en';
-      if (country === 'IN') {
-        const hindiBelt = new Set(['UP','MP','RJ','BR','HR','UT','UK','HP','JH','DL','CH','CT','JK','LA']);
-        const gujarati = new Set(['GJ','DN','DD']); // Gujarat, Dadra & Nagar Haveli, Daman & Diu
-        const marathi = new Set(['MH']); // Maharashtra
+// if (!stored) {
+//   (async () => {
+//     try {
+//       const res = await fetch('https://ipapi.co/json/');
+//       if (!res.ok) return;
+//       const data: any = await res.json();
+//       const country: string | undefined = data?.country;
+//       const region: string = (data?.region_code || data?.region || '').toUpperCase();
+//       // Regional mapping within India
+//       // Reference ISO 3166-2:IN codes commonly used by ip providers (e.g., UP, MH, GJ, DL, RJ, MP, BR, HR, UT, HP, JH, CT, JK, CH)
+//       let geoLang: SupportedLang = 'en';
+//       if (country === 'IN') {
+//         const hindiBelt = new Set(['UP','MP','RJ','BR','HR','UT','UK','HP','JH','DL','CH','CT','JK','LA']);
+//         const gujarati = new Set(['GJ','DN','DD']); // Gujarat, Dadra & Nagar Haveli, Daman & Diu
+//         const marathi = new Set(['MH']); // Maharashtra
 
-        if (gujarati.has(region)) geoLang = 'gu';
-        else if (marathi.has(region)) geoLang = 'mr';
-        else if (hindiBelt.has(region)) geoLang = 'hi';
-        else geoLang = 'hi'; // Default within India -> Hindi
-      }
-      if (i18n.language !== geoLang) {
-        void i18n.changeLanguage(geoLang);
-      }
-    } catch {
-      // Silent fail; fallback remains
-    }
-  })();
-}
+//         if (gujarati.has(region)) geoLang = 'gu';
+//         else if (marathi.has(region)) geoLang = 'mr';
+//         else if (hindiBelt.has(region)) geoLang = 'hi';
+//         else geoLang = 'hi'; // Default within India -> Hindi
+//       }
+//       if (i18n.language !== geoLang) {
+//         void i18n.changeLanguage(geoLang);
+//       }
+//     } catch {
+//       // Silent fail; fallback remains
+//     }
+//   })();
+// }
 
 export default i18n;

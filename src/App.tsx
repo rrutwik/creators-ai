@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import i18n from './i18n';
 import type { THEME_MODES } from './utils/consts';
 import { LanguageSwitcher } from './components/LanguageSwitcher';
-import { initGA, setUser as setAnalyticsUser, trackLogin, clearUser } from './analytics';
+import { initGA, setUser as setAnalyticsUser, trackLogin, clearUser, trackThemeChange, trackLanguageChange, trackLogout as trackLogoutEvent } from './analytics';
 
 export default function App() {
   const { t } = useTranslation();
@@ -77,7 +77,13 @@ export default function App() {
       root.classList.remove('dark');
     }
     localStorage.setItem('theme', theme);
+    // GA4: track theme change
+    trackThemeChange(theme);
   }, [theme]);
+
+  useEffect(() => {
+    trackLanguageChange(language);
+  }, [language]);
 
   const handleLogin = (userData: User) => {
     if (!userData) return;
@@ -86,6 +92,9 @@ export default function App() {
       const lng = userData.language;
       if (i18n.language !== lng) {
         void i18n.changeLanguage(lng);
+        // keep local state in sync + track
+        setLanguage(lng);
+        trackLanguageChange(lng);
       }
     } else {
       updateProfile({ language: i18n.language });
@@ -94,7 +103,6 @@ export default function App() {
     setIsAuthenticated(true);
 
     // GA4: login event + set user
-    trackLogin('google');
     setAnalyticsUser({
       id: userData._id,
       email: userData.email,
@@ -103,6 +111,7 @@ export default function App() {
       last_name: userData.last_name,
       credits: userData.credits,
     });
+    trackLogin('google');
   };
 
   const handleUserUpdated = (updated: any) => {
@@ -110,6 +119,9 @@ export default function App() {
     const lng = updated?.language || 'en';
     if (i18n.language !== lng) {
       void i18n.changeLanguage(lng);
+      // keep local state in sync + track
+      setLanguage(lng);
+      trackLanguageChange(lng);
     }
   };
 
@@ -125,6 +137,8 @@ export default function App() {
       Cookies.remove('session_token');
       Cookies.remove('refresh_token');
       clearUser();
+      // GA4: track logout
+      trackLogoutEvent();
     }
   };
 

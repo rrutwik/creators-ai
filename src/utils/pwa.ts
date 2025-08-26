@@ -1,5 +1,7 @@
 // PWA utilities for service worker registration and install prompt
 
+import { trackPWAInstallPromptShown, trackPWAInstallOutcome, trackPWAInstalled } from '../analytics';
+
 export const registerServiceWorker = async (): Promise<void> => {
   if ('serviceWorker' in navigator) {
     try {
@@ -29,12 +31,16 @@ export const setupInstallPrompt = (): void => {
     deferredPrompt = e;
     // Show install button or banner
     showInstallPrompt();
+    // Track that the prompt became available/shown
+    trackPWAInstallPromptShown();
   });
 
   window.addEventListener('appinstalled', () => {
     console.log('PWA was installed');
     deferredPrompt = null;
     hideInstallPrompt();
+    // Track successful installation
+    trackPWAInstalled();
   });
 };
 
@@ -53,6 +59,8 @@ export const promptInstall = async (): Promise<void> => {
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
     console.log(`User response to install prompt: ${outcome}`);
+    // Track outcome: 'accepted' | 'dismissed'
+    trackPWAInstallOutcome(outcome);
     deferredPrompt = null;
   }
 };

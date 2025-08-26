@@ -158,9 +158,9 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
             <Sparkles className="w-3 h-3 mr-1" />
             AI Assistant
           </div> */}
-          <Button variant="ghost" size="icon" className="w-10 h-10 touch-manipulation">
+          {/* <Button variant="ghost" size="icon" className="w-10 h-10 touch-manipulation">
             <MoreVertical className="w-4 h-4" />
-          </Button>
+          </Button> */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="w-10 h-10 touch-manipulation">
