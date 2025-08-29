@@ -71,6 +71,7 @@ interface ChatSession {
     name: string;
     user_id: string;
     chatbot_id: Bot,
+    can_message: boolean,
     messages: Array<ChatMessage>;
 }
 

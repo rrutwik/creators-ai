@@ -76,42 +76,42 @@ export function ChatInterface({ user, onLogout, onUserUpdated, theme, setTheme, 
     setSidebarOpen(false);
   };
 
-  // useEffect(() => {
-  //   const body = document.body;
-  //   if (isMobile && sidebarOpen) {
-  //     // Save current scroll position and lock body
-  //     scrollYRef.current = window.scrollY || window.pageYOffset || 0;
-  //     body.style.position = 'fixed';
-  //     body.style.top = `-${scrollYRef.current}px`;
-  //     body.style.left = '0';
-  //     body.style.right = '0';
-  //     body.style.width = '100%';
-  //     body.style.overflow = 'hidden';
-  //   } else {
-  //     // Restore body scroll
-  //     if (body.style.position === 'fixed') {
-  //       body.style.position = '';
-  //       body.style.top = '';
-  //       body.style.left = '';
-  //       body.style.right = '';
-  //       body.style.width = '';
-  //       body.style.overflow = '';
-  //       window.scrollTo(0, scrollYRef.current || 0);
-  //     }
-  //   }
+  useEffect(() => {
+    const body = document.body;
+    if (isMobile && sidebarOpen) {
+      // Save current scroll position and lock body
+      scrollYRef.current = window.scrollY || window.pageYOffset || 0;
+      body.style.position = 'fixed';
+      body.style.top = `-${scrollYRef.current}px`;
+      body.style.left = '0';
+      body.style.right = '0';
+      body.style.width = '100%';
+      body.style.overflow = 'hidden';
+    } else {
+      // Restore body scroll
+      if (body.style.position === 'fixed') {
+        body.style.position = '';
+        body.style.top = '';
+        body.style.left = '';
+        body.style.right = '';
+        body.style.width = '';
+        body.style.overflow = '';
+        window.scrollTo(0, scrollYRef.current || 0);
+      }
+    }
 
-  //   return () => {
-  //     if (body.style.position === 'fixed') {
-  //       body.style.position = '';
-  //       body.style.top = '';
-  //       body.style.left = '';
-  //       body.style.right = '';
-  //       body.style.width = '';
-  //       body.style.overflow = '';
-  //       window.scrollTo(0, scrollYRef.current || 0);
-  //     }
-  //   };
-  // }, [isMobile, sidebarOpen]);
+    return () => {
+      if (body.style.position === 'fixed') {
+        body.style.position = '';
+        body.style.top = '';
+        body.style.left = '';
+        body.style.right = '';
+        body.style.width = '';
+        body.style.overflow = '';
+        window.scrollTo(0, scrollYRef.current || 0);
+      }
+    };
+  }, [isMobile, sidebarOpen]);
 
   useEffect(() => {
     const fetchChatHistory = async () => {

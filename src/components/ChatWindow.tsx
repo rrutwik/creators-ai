@@ -27,10 +27,17 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
   const [chatSession, setChatSession] = useState<ChatSession | null>(null);
 
   useEffect(() => {
-    if (!selectedChat) return;
+    if (!selectedChat) {
+      setChatSession(null);
+      setIsTyping(false);
+      setMessages([]);
+      return;
+    }
     const fetchChat = async () => {
       try {
         const response = await getChat(selectedChat.uuid);
+        setChatSession(response.data);
+        setIsTyping(response.data.can_message == false);
         setMessages(response.data.messages);
       } catch (error) {
         console.error('Error fetching chat:', error);

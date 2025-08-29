@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from './ui/button';
 import { ScrollArea } from './ui/scroll-area';
 import { 
@@ -31,6 +31,14 @@ interface SidebarProps {
   isMobile?: boolean;
 }
 
+export const SideBarText = {
+  bots: 'bots',
+  history: 'history',
+} as const;
+
+export type SideBarTextType = typeof SideBarText[keyof typeof SideBarText];
+
+
 export function Sidebar({
   user,
   selectedBot,
@@ -48,7 +56,7 @@ export function Sidebar({
   isMobile = false
 }: SidebarProps) {
   const { t } = useTranslation();
-  const [activeSection, setActiveSection] = useState<'bots' | 'history'>('bots');
+  const [activeSection, setActiveSection] = useState<SideBarTextType>(SideBarText.bots);
   const formatTime = (date: string) => {
     const now = new Date();
     const diff = now.getTime() - new Date(date).getTime();
@@ -61,6 +69,14 @@ export function Sidebar({
     if (minutes > 0) return `${minutes}m`;
     return `${seconds}s`;
   };
+
+  useEffect(() => {
+    if (selectedChat) {
+      setActiveSection(SideBarText.history);
+    } else {
+      setActiveSection(SideBarText.bots);
+    }
+  }, [selectedChat]);
 
   return (
     <div
@@ -89,17 +105,17 @@ export function Sidebar({
       <div className="px-4 py-3 border-b border-sidebar-border flex-shrink-0">
         <div className="flex space-x-1">
           <Button
-            variant={activeSection === 'bots' ? 'secondary' : 'ghost'}
+            variant={activeSection === SideBarText.bots ? 'secondary' : 'ghost'}
             size="sm"
-            onClick={() => setActiveSection('bots')}
+            onClick={() => setActiveSection(SideBarText.bots)}
             className="flex-1 h-10 touch-manipulation"
           >
             {t('sidebar.religiousGuides')}
           </Button>
           <Button
-            variant={activeSection === 'history' ? 'secondary' : 'ghost'}
+            variant={activeSection === SideBarText.history ? 'secondary' : 'ghost'}
             size="sm"
-            onClick={() => setActiveSection('history')}
+            onClick={() => setActiveSection(SideBarText.history)}
             className="flex-1 h-10 touch-manipulation"
           >
             {t('sidebar.history')}
@@ -135,7 +151,6 @@ export function Sidebar({
             {chatHistory.map((chat) => {
               const bot = religiousBots.find(b => b._id === chat.chatbot_id._id);
               return (
-                console.log(chat?._id, selectedChat?._id, chat?._id === selectedChat?._id),
                 <Button
                   key={chat._id}
                   variant={chat?._id === selectedChat?._id ? "secondary" : "ghost"}

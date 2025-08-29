@@ -77,10 +77,6 @@ async function handleRequest<T>(
                 return response.data;
             } catch (refreshError) {
                 console.error('Error refreshing access token:', refreshError);
-                console.log({
-                    options,
-                    error
-                })
                 if (!options?.suppressReloadOnAuthFail) {
                     logout();
                 window.location.reload();
