@@ -237,11 +237,11 @@ export function SettingsModal({ onClose, theme, setTheme }: SettingsModalProps) 
 
         <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t">
           <Button variant="outline" onClick={onClose} className="h-11 touch-manipulation">
-            Cancel
+            Close
           </Button>
-          <Button className="h-11 touch-manipulation">
+          {/* <Button className="h-11 touch-manipulation">
             Save Changes
-          </Button>
+          </Button> */}
         </div>
       </DialogContent>
     </Dialog>

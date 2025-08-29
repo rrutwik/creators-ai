@@ -30,12 +30,13 @@ export function AddCreditsModal({ user, open, onClose }: AddCreditsModalProps) {
 
   const creditsFromAmount = useMemo(() => rupeesToPay * 2, [rupeesToPay]);
   const upiUrl = useMemo(() => {
+    const note = `Add ${creditsFromAmount} credits - ${user.email}`;
     const amount = rupeesToPay;
     return generateUpiUrl(
       'rutwik2808-1@okaxis',
       'CreatorsAI',
       amount,
-      `Add ${creditsFromAmount} credits | ${user.email}`
+      note
     );
   }, [rupeesToPay, creditsFromAmount, user.email]);
   const qrUrl = useMemo(() => (
