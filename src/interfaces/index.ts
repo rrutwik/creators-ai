@@ -67,12 +67,14 @@ interface ChatMessage {
 }
 
 interface ChatSession {
+    _id: string;
     uuid: string;
     name: string;
     user_id: string;
     chatbot_id: Bot,
     can_message: boolean,
     messages: Array<ChatMessage>;
+    updatedAt: string;
 }
 
 interface User {

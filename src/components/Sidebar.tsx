@@ -128,7 +128,7 @@ export function Sidebar({
         {activeSection === 'bots' ? (
           <div className="space-y-3">
             {religiousBots.map((bot) => (
-              <div>
+              <div key={bot._id}>
               <Button
                 key={bot._id}
                 variant={selectedBot?.id === bot.id ? "secondary" : "ghost"}
@@ -152,8 +152,8 @@ export function Sidebar({
               const bot = religiousBots.find(b => b._id === chat.chatbot_id._id);
               return (
                 <Button
-                  key={chat._id}
-                  variant={chat?._id === selectedChat?._id ? "secondary" : "ghost"}
+                  key={chat.uuid}
+                  variant={chat.uuid === selectedChat?.uuid ? "secondary" : "ghost"}
                   className="w-full justify-start h-auto p-4 touch-manipulation"
                   onClick={() => onSelectChat(chat)}
                 >

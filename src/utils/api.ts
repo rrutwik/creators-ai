@@ -118,8 +118,8 @@ export const getRazorPayOrder = (body: { order_id: number }) => {
         }));
 };
 
-export const getChat = (chatId: string) => {
-    return handleRequest(() => getAuthenticatedAxiosInstance().get(`/chat/${chatId}`));
+export const getChatSession = (chatId: string) => {
+    return handleRequest<{data: ChatSession}>(() => getAuthenticatedAxiosInstance().get(`/chat/${chatId}`));
 };
 
 export const sendMessage = (message: string, chatUUID?: string, chatbot_id?: string) => {

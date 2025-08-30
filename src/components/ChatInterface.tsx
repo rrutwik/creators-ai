@@ -5,7 +5,7 @@ import { ProfileModal } from './ProfileModal';
 import { HistoryModal } from './HistoryModal';
 import { SettingsModal } from './SettingsModal';
 import { AddCreditsModal } from './AddCreditsModal';
-import { getAvailableBots, getPastChats, getChat } from '../utils/api';
+import { getAvailableBots, getPastChats, getChatSession } from '../utils/api';
 import type { ChatDetails, ReligiousBot, User } from '../interfaces';
 import { useTranslation } from 'react-i18next';
 import type { THEME_MODES } from '../utils/consts';
@@ -62,11 +62,6 @@ export function ChatInterface({ user, onLogout, onUserUpdated, theme, setTheme, 
 
     fetchBots();
   }, [i18n.language]);
-
-  useEffect(() => {
-    console.log("Selected Bot: ", selectedBot);
-    console.log("Selected Chat: ", selectedChat);
-  }, [selectedBot, selectedChat]);
 
   const handleToggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -129,7 +124,7 @@ export function ChatInterface({ user, onLogout, onUserUpdated, theme, setTheme, 
   const handleMessageSent = async (sessionUuid: string) => {
     try {
       // Fetch the updated chat session
-      const response = await getChat(sessionUuid);
+      const response = await getChatSession(sessionUuid);
       const updatedChat = response.data;
 
       const chatDetails: ChatDetails = {
@@ -144,7 +139,6 @@ export function ChatInterface({ user, onLogout, onUserUpdated, theme, setTheme, 
         setSelectedChat(chatDetails);
         setChatHistory(prev => [chatDetails, ...prev]);
       } else {
-        // Update existing chat in history
         setChatHistory(prev =>
           prev.map(chat =>
             chat.uuid === sessionUuid
@@ -214,8 +208,6 @@ export function ChatInterface({ user, onLogout, onUserUpdated, theme, setTheme, 
           onSelectChat={(chat) => {
             const bot = religiousBots.find((bot) => bot._id === chat.chatbot_id._id);
             setSelectedBot(bot || null);
-            console.log("Selected Bot: ", bot);
-            console.log("Selected Chat: ", chat);
             setSelectedChat(chat);
             handleCloseSidebar();
           }}

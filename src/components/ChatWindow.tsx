@@ -3,9 +3,10 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { ScrollArea } from './ui/scroll-area';
 import { Avatar, AvatarFallback } from './ui/avatar';
-import { Send, Menu, MoreVertical, Sparkles, ArrowLeft, LogOut } from 'lucide-react';
+import { Send, Menu, MoreVertical, ArrowLeft, LogOut } from 'lucide-react';
 import { MessageRole, type ChatDetails, type ChatMessage, type ChatSession, type ReligiousBot } from '../interfaces';
-import { getChat, sendMessage } from '../utils/api';
+import { MessageList } from "./MessageList";
+import { getChatSession, sendMessage } from '../utils/api';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from './ui/dropdown-menu';
@@ -24,33 +25,64 @@ interface ChatWindowProps {
 export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogout, isMobile, sidebarOpen, onMessageSent, onRequireAddCredits }: ChatWindowProps) {
   const { t } = useTranslation();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [chatSession, setChatSession] = useState<ChatSession | null>(null);
+  const [streamingText, setStreamingText] = useState('');
+  const [streamingTextIndex, setStreamingTextIndex] = useState(0);
+  const lastAssistantMessage = useRef<ChatMessage>(null);
+  const [inputValue, setInputValue] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const pollingInterval = useRef<NodeJS.Timeout>(null);
+  const typingInterval = useRef<NodeJS.Timeout>(null);
 
   useEffect(() => {
     if (!selectedChat) {
-      setChatSession(null);
       setIsTyping(false);
       setMessages([]);
       return;
     }
     const fetchChat = async () => {
       try {
-        const response = await getChat(selectedChat.uuid);
-        setChatSession(response.data);
-        setIsTyping(response.data.can_message == false);
-        setMessages(response.data.messages);
+        const response = await getChatSession(selectedChat.uuid);
+        lastAssistantMessage.current = null;
+        const messages = response.data.messages;
+        if (response.data.can_message == false) {
+          setIsTyping(true);
+          const lastMessage = messages[messages.length - 1];
+          if (lastMessage.role == MessageRole.ASSISTANT) {
+            setMessages(messages.slice(0, messages.length - 1));
+            setStreamingTextIndex(0);
+            lastAssistantMessage.current = lastMessage;
+          } else {
+            setMessages(messages);
+          }
+          startPolling(selectedChat.uuid);
+        } else {
+          setIsTyping(false);
+          setMessages(messages);
+        }
       } catch (error) {
         console.error('Error fetching chat:', error);
       }
     };
     fetchChat();
+    return () => {
+      if (pollingInterval.current) {
+        clearInterval(pollingInterval.current);
+        pollingInterval.current = null;
+      }
+      if (typingInterval.current) {
+        clearInterval(typingInterval.current);
+        typingInterval.current = null;
+      }
+      setIsTyping(false);
+      setMessages([]);
+      setStreamingText('');
+      setStreamingTextIndex(0);
+      lastAssistantMessage.current = null;
+    };
   }, [selectedChat]);
-
-  const [inputValue, setInputValue] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-
+  
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -64,41 +96,44 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
     setMessages([]);
   }, [selectedBot]);
 
-  const fetchNewMessages = useCallback(async (chatSelectionId?: string | null) => {
-    if (!chatSelectionId) return true;
-
+  const fetchNewMessages = useCallback(async (chatId: string): Promise<ChatSession | null> => {
     try {
-      const response = await getChat(chatSelectionId);
+      const response = await getChatSession(chatId);
       const data = response.data;
-      const _chatSession = data;
-      if (!chatSession) {
-        setChatSession({ ..._chatSession });
-      }
-
-      if (data.messages.length && data.messages[data.messages.length - 1].role === 2) {
-        const newMessage: ChatMessage = data.messages[data.messages.length - 1];
-        setMessages((prevMessages) => [...prevMessages, newMessage]);
-        return true;
-      }
-      return false;
+      const chatSession = data;
+      return chatSession;
     } catch (error) {
       console.error('Error fetching new messages:', error);
-      return false;
+      return null;
     }
-  }, [chatSession]);
+  }, []);
 
   const startPolling = useCallback(
-    async (chatUuid?: string) => {
-      if (!chatUuid) return;
-      const intervalId = setInterval(async () => {
-        const stopPolling = await fetchNewMessages(chatUuid);
-        if (stopPolling) {
-          setIsTyping(false);
-          clearInterval(intervalId!); // Stop polling when the condition is met
+    async (chatUuid: string) => {
+      console.log('Starting polling for chat', chatUuid);
+      pollingInterval.current = setInterval(async () => {
+        const chatSession = await fetchNewMessages(chatUuid);
+
+        if (!chatSession) {
+          console.error('Error fetching new messages');
+          clearInterval(pollingInterval.current!);
+          pollingInterval.current = null;
+          return;
         }
-      }, 5000); // Poll every 5 seconds
+        const lastMessage = chatSession.messages[chatSession.messages.length - 1];
+        lastAssistantMessage.current = lastMessage;
+        if (chatSession.can_message == true) {
+          console.log('Chat session can_message', chatSession.can_message);
+          clearInterval(pollingInterval.current!);
+          pollingInterval.current = null;
+        }
+      }, 5000);
       return () => {
-        return clearInterval(intervalId);
+        if (pollingInterval.current) {
+          console.log('clearing pollingInterval.current');
+          clearInterval(pollingInterval.current);
+          pollingInterval.current = null;
+        }
       };
     },
     [fetchNewMessages]
@@ -119,16 +154,14 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
         throw error;
       }
 
-      const anyNewMessage = updatedSession.messages.pop();
+      const userMessage = updatedSession.messages.pop();
+      if (userMessage) {
+        setMessages(prev => [...prev, userMessage]);
+      }
       setIsTyping(true);
-      if (anyNewMessage) {
-        setMessages(prev => [...prev, anyNewMessage]);
-      }
       setInputValue('');
-      if (updatedSession?.uuid) {
-        onMessageSent(updatedSession.uuid);
-        startPolling(updatedSession.uuid);
-      }
+      onMessageSent(updatedSession.uuid);
+      startPolling(updatedSession.uuid);
     } catch (error: any) {
       console.error('Error sending message:', error);
     }
@@ -140,6 +173,49 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
       handleSendMessage();
     }
   };
+
+
+  useEffect(() => {
+    if (!lastAssistantMessage.current) return;
+    setStreamingText(lastAssistantMessage.current.text.slice(0, streamingTextIndex));
+  }, [streamingTextIndex]);
+
+  useEffect(() => {
+    if (!typingInterval.current && isTyping) {
+      typingInterval.current = setInterval(() => {
+        const lastMessage = lastAssistantMessage.current;
+        if (lastMessage && lastMessage.text.length > streamingTextIndex) {
+          setStreamingTextIndex((prev) => {
+            const newIndex = prev + 1;
+            if (newIndex >= lastMessage.text.length) {
+              if (pollingInterval.current == null) {
+                setIsTyping(false);
+                setMessages((prev) => {
+                  const newMessages = [...prev, lastMessage];
+                  return newMessages;
+                });
+                lastAssistantMessage.current = null;
+                setStreamingTextIndex(0);
+                if (typingInterval.current) {
+                  clearInterval(typingInterval.current);
+                  typingInterval.current = null;
+                }
+              }
+              return prev;
+            }
+            return newIndex;
+          });
+        }
+      }, 50); // Reduced interval for smoother typing
+    }
+
+    return () => {
+      if (typingInterval.current) {
+        clearInterval(typingInterval.current);
+        typingInterval.current = null;
+      }
+    };
+  }, [isTyping, streamingTextIndex]);
 
   return (
     <div className="flex flex-col h-full max-h-screen min-h-0">
@@ -190,47 +266,20 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
             <div className="flex items-center justify-center h-full min-h-[300px]">
               <div className="text-center max-w-md">
                 <div className="text-6xl mb-4">{selectedBot.avatar}</div>
-                {/* <h3 className="text-xl font-semibold mb-2">{selectedBot.name}</h3> */}
+                <h3 className="text-xl font-semibold mb-2">{selectedBot.name}</h3>
                 <p className="text-muted-foreground mb-4">{selectedBot.greeting}</p>
               </div>
             </div>
           )}
 
-          {messages.map((message) => (
-            <div
-              key={message._id}
-              className={`flex ${message.role == MessageRole.USER ? 'justify-end' : 'justify-start'}`}
-            >
-              <div
-                className={`flex space-x-3 max-w-[85%] sm:max-w-[80%] ${message.role == MessageRole.USER ? 'flex-row-reverse space-x-reverse' : ''
-                  }`}
-              >
-                {message.role != MessageRole.USER && (
-                  <Avatar className="w-8 h-8 flex-shrink-0">
-                    <AvatarFallback className="text-lg">
-                      {selectedBot.avatar}
-                    </AvatarFallback>
-                  </Avatar>
-                )}
-                <div
-                  className={`px-4 py-3 rounded-2xl ${message.role == MessageRole.USER
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted text-foreground'
-                    }`}
-                >
-                  <p className="whitespace-pre-wrap break-words">{message.text}</p>
-                  <p className={`text-xs mt-2 opacity-70`}>
-                    {new Date(message.updatedAt).toLocaleTimeString([], {
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))}
+          <MessageList 
+            messages={messages} 
+            selectedBot={selectedBot} 
+            isTyping={isTyping} 
+            streamingText={streamingText} 
+          />
 
-          {isTyping && (
+          {isTyping && streamingText == "" && (
             <div className="flex justify-start">
               <div className="flex space-x-3 max-w-[85%] sm:max-w-[80%]">
                 <Avatar className="w-8 h-8 flex-shrink-0">
