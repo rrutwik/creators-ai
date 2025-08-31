@@ -1,6 +1,6 @@
 import axios, { type AxiosInstance, type AxiosResponse } from 'axios';
 import Cookies from 'js-cookie';
-import { type ChatDetails, type ChatSession, type ReligiousBot, type User } from '../interfaces';
+import { type AuthResponse, type ChatDetails, type ChatSession, type ReligiousBot, type User } from '../types/interfaces';
 
 const BASE_URL = 'https://backend-api.techkarmic.com';
 
@@ -89,8 +89,8 @@ async function handleRequest<T>(
     }
 }
 
-export const loginWithGoogle = (data: {}) => {
-    return handleRequest(() => axios.post(`${BASE_URL}/auth/google_login`, data));
+export const loginWithGoogle = (data: AuthResponse) => {
+    return handleRequest<{ data: AuthResponse }>(() => axios.post(`${BASE_URL}/auth/google_login`, data));
 };
 
 export const getPastChats = async (offset: number, limit: number) => {
@@ -101,21 +101,6 @@ export const getPastChats = async (offset: number, limit: number) => {
         data: data.data.records,
         total: data.data.total
     };
-};
-
-export const createRazorPayOrder = (body: { amount: number }) => {
-    return handleRequest(() =>
-        getAuthenticatedAxiosInstance().post('/user/create_razorpay_order', body)
-    );
-};
-
-export const getRazorPayOrder = (body: { order_id: number }) => {
-    return handleRequest(() =>
-        getAuthenticatedAxiosInstance().get('/user/get_razorpay_order', {
-          params: {
-            order_id: body.order_id
-          }
-        }));
 };
 
 export const getChatSession = (chatId: string) => {
@@ -135,7 +120,7 @@ export const getAvailableBots = async () => {
 }
 
 export const updateProfile = (body: Partial<User>) => {
-    return handleRequest(() =>
-        getAuthenticatedAxiosInstance().put('/user/profile', body)
-    );
+  return handleRequest<{ data: User }>(
+    () => getAuthenticatedAxiosInstance().patch('/auth/me', body)
+  ).then(response => response.data);
 };

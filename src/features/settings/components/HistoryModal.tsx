@@ -82,9 +82,9 @@ export function HistoryModal({ onClose, religiousBots, chatHistory }: HistoryMod
               {religiousBots.map(bot => (
                 <Button
                   key={bot._id}
-                  variant={selectedFilter === bot.id ? 'default' : 'outline'}
+                  variant={selectedFilter === bot._id ? 'default' : 'outline'}
                   size="sm"
-                  onClick={() => setSelectedFilter(bot.id)}
+                  onClick={() => setSelectedFilter(bot._id)}
                   className="flex items-center gap-2 flex-shrink-0 h-10 touch-manipulation"
                 >
                   <span className="text-sm">{bot.avatar}</span>
