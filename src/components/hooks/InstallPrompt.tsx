@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Button } from './ui/button';
+import { Button } from '../ui/button';
 import { X, Download } from 'lucide-react';
-import { promptInstall, isStandalone } from '../utils/pwa';
 import { useTranslation } from 'react-i18next';
+import { isStandalone, promptInstall } from '../../services/pwa';
 
 export function InstallPrompt() {
   const { t } = useTranslation();

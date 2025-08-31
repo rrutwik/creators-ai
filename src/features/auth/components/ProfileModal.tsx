@@ -1,18 +1,18 @@
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { Badge } from './ui/badge';
-import { Separator } from './ui/separator';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../../../components/ui/dialog';
+import { Button } from '../../../components/ui/button';
+import { Input } from '../../../components/ui/input';
+import { Label } from '../../../components/ui/label';
+import { Avatar, AvatarFallback, AvatarImage } from '../../../components/ui/avatar';
+import { Badge } from '../../../components/ui/badge';
+import { Separator } from '../../../components/ui/separator';
 import { Edit, Mail, Calendar, Shield, Languages } from 'lucide-react';
-import type { User } from '../interfaces';
-import { avatarSrc } from '../utils';
+import type { User } from '../../../types/interfaces';
 import { useTranslation } from 'react-i18next';
-import { updateProfile } from '../utils/api';
-import { SUPPORTED_LANGUAGES } from '../utils/consts';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { updateProfile } from '../../../services/api';
+import { SUPPORTED_LANGUAGES } from '../../../utils/consts';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../components/ui/select';
+import { avatarSrc } from '../../../services';
 
 interface ProfileModalProps {
   user: User | null;

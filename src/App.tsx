@@ -1,17 +1,17 @@
 import { useState, useEffect, useRef } from 'react';
-import { LoginPage } from './components/LoginPage';
-import { ChatInterface } from './components/ChatInterface';
-import { InstallPrompt } from './components/InstallPrompt';
+import { LoginPage } from './features/auth/components/LoginPage';
+import { ChatInterface } from './features/chat/components/ChatInterface';
+import { InstallPrompt } from './components/hooks/InstallPrompt';
 import { Toaster } from './components/ui/sonner';
-import { getUserDetails, logout, updateProfile } from './utils/api';
-import { registerServiceWorker, setupInstallPrompt } from './utils/pwa';
+import { getUserDetails, logout, updateProfile } from './services/api';
+import { registerServiceWorker, setupInstallPrompt } from './services/pwa';
 import Cookies from 'js-cookie';
-import type { User } from './interfaces';
+import type { User } from './types/interfaces';
 import { useTranslation } from 'react-i18next';
 import i18n from './i18n';
 import type { THEME_MODES } from './utils/consts';
-import { LanguageSwitcher } from './components/LanguageSwitcher';
-import { initGA, setUser as setAnalyticsUser, trackLogin, clearUser, trackThemeChange, trackLanguageChange, trackLogout as trackLogoutEvent } from './analytics';
+import { LanguageSwitcher } from './components/hooks/LanguageSwitcher';
+import { initGA, setUser as setAnalyticsUser, trackLogin, clearUser, trackThemeChange, trackLanguageChange, trackLogout as trackLogoutEvent } from './lib/analytics';
 
 export default function App() {
   const { t } = useTranslation();
@@ -142,17 +142,16 @@ export default function App() {
     }
   };
 
-  // Show loading state while checking authentication
-  if (isAuthenticated === null) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">{t('common.loading')}</p>
-        </div>
-      </div>
-    );
-  }
+  // if (isAuthenticated === null) {
+  //   return (
+  //     <div className="min-h-screen bg-background flex items-center justify-center">
+  //       <div className="text-center">
+  //         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+  //         <p className="text-muted-foreground">{t('common.loading')}</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="min-h-screen bg-background">

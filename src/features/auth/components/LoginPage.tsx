@@ -1,11 +1,11 @@
-import { Card, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Card, CardDescription, CardHeader, CardTitle } from '../../../components/ui/card';
 import Cookies from 'js-cookie';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { useState } from 'react';
-import { getUserDetails, loginWithGoogle } from '../utils/api';
-import { GoogleLoginComponent } from './login/GoogleLogin';
+import { getUserDetails, loginWithGoogle } from '../../../services/api';
+import { GoogleLoginComponent } from './GoogleLogin';
 import { useTranslation } from 'react-i18next';
-import type { User } from '../interfaces';
+import type { User } from '../../../types/interfaces';
 
 interface LoginPageProps {
   onLogin: (user: User) => void;

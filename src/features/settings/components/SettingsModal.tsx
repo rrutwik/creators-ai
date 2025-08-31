@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog';
-import { Button } from './ui/button';
-import { Label } from './ui/label';
-import { Switch } from './ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Separator } from './ui/separator';
-import { Badge } from './ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../../../components/ui/dialog';
+import { Button } from '../../../components/ui/button';
+import { Label } from '../../../components/ui/label';
+import { Switch } from '../../../components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../components/ui/select';
+import { Separator } from '../../../components/ui/separator';
+import { Badge } from '../../../components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../components/ui/tabs';
 import { 
   Moon, 
   Sun, 
@@ -17,7 +17,7 @@ import {
   Trash2,
   Info
 } from 'lucide-react';
-import { type THEME_MODES } from '../utils/consts';
+import { type THEME_MODES } from '../../../utils/consts';
 
 interface SettingsModalProps {
   onClose: () => void;

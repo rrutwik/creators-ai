@@ -1,5 +1,5 @@
 import { GoogleLogin } from "@react-oauth/google";
-import { CardContent } from '../ui/card';
+import { CardContent } from '../../../components/ui/card';
 
 export function GoogleLoginComponent({ handleLoginSuccess, handleLoginError }: { handleLoginSuccess: (response: any) => void, handleLoginError: (error: any) => void }) {
     return (

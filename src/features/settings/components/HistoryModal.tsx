@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { ScrollArea } from './ui/scroll-area';
-import { Separator } from './ui/separator';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../../../components/ui/dialog';
+import { Button } from '../../../components/ui/button';
+import { Input } from '../../../components/ui/input';
+import { ScrollArea } from '../../../components/ui/scroll-area';
+import { Separator } from '../../../components/ui/separator';
 import { Search, Calendar, Trash2, Download } from 'lucide-react';
-import type { ChatDetails, ReligiousBot } from '../interfaces';
+import type { ChatDetails, ReligiousBot } from '../../../types/interfaces';
 import { useTranslation } from 'react-i18next';
 
 interface HistoryModalProps {

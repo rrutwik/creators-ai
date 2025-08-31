@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import type { User } from '../interfaces';
-import { generateUpiUrl } from '../utils';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../../../components/ui/dialog';
+import { Button } from '../../../components/ui/button';
+import { Input } from '../../../components/ui/input';
+import { Label } from '../../../components/ui/label';
+import type { User } from '../../../types/interfaces';
 import { useTranslation } from 'react-i18next';
+import { generateUpiUrl } from '../../../services';
 
 interface AddCreditsModalProps {
   user: User;

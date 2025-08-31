@@ -1,15 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
-import { Sidebar } from './Sidebar';
+import { Sidebar } from '../../../components/layout/Sidebar';
 import { ChatWindow } from './ChatWindow';
-import { ProfileModal } from './ProfileModal';
-import { HistoryModal } from './HistoryModal';
-import { SettingsModal } from './SettingsModal';
-import { AddCreditsModal } from './AddCreditsModal';
-import { getAvailableBots, getPastChats, getChatSession } from '../utils/api';
-import type { ChatDetails, ReligiousBot, User } from '../interfaces';
+import { ProfileModal } from '../../auth/components/ProfileModal';
+import { HistoryModal } from '../../settings/components/HistoryModal';
+import { SettingsModal } from '../../settings/components/SettingsModal';
+import { AddCreditsModal } from '../../settings/components/AddCreditsModal';
+import { getAvailableBots, getPastChats, getChatSession } from '../../../services/api';
+import type { ChatDetails, ReligiousBot, User } from '../../../types/interfaces';
 import { useTranslation } from 'react-i18next';
-import type { THEME_MODES } from '../utils/consts';
-import i18n from '../i18n';
+import type { THEME_MODES } from '../../../utils/consts';
+import i18n from '../../../i18n';
 
 interface ChatInterfaceProps {
   user: User | null;
@@ -68,6 +68,12 @@ export function ChatInterface({ user, onLogout, onUserUpdated, theme, setTheme, 
   };
 
   const handleCloseSidebar = () => {
+    setSidebarOpen(false);
+  };
+
+  const handleBotSelect = (bot: ReligiousBot) => {
+    setSelectedBot(bot);
+    setSelectedChat(null);
     setSidebarOpen(false);
   };
 

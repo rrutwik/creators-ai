@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Button } from './ui/button';
-import { ScrollArea } from './ui/scroll-area';
+import { Button } from '../ui/button';
+import { ScrollArea } from '../ui/scroll-area';
 import { 
   LogOut, 
   X,
@@ -8,10 +8,10 @@ import {
   Settings,
   PlusCircle
 } from 'lucide-react';
-import type { ChatDetails, ReligiousBot, User } from '../interfaces';
-import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar';
-import { avatarSrc } from '../utils';
+import type { ChatDetails, ReligiousBot, User } from '../../types/interfaces';
+import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar';
 import { useTranslation } from 'react-i18next';
+import { avatarSrc } from '../../services';
 
 interface SidebarProps {
   user: User | null;

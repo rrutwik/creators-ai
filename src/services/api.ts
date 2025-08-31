@@ -134,7 +134,6 @@ export const getAvailableBots = async () => {
     );
 }
 
-
 export const updateProfile = (body: Partial<User>) => {
     return handleRequest(() =>
         getAuthenticatedAxiosInstance().put('/user/profile', body)

@@ -1,15 +1,15 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { ScrollArea } from './ui/scroll-area';
-import { Avatar, AvatarFallback } from './ui/avatar';
+import { Button } from '../../../components/ui/button';
+import { Input } from '../../../components/ui/input';
+import { ScrollArea } from '../../../components/ui/scroll-area';
+import { Avatar, AvatarFallback } from '../../../components/ui/avatar';
 import { Send, Menu, MoreVertical, ArrowLeft, LogOut } from 'lucide-react';
-import { MessageRole, type ChatDetails, type ChatMessage, type ChatSession, type ReligiousBot } from '../interfaces';
+import { MessageRole, type ChatDetails, type ChatMessage, type ChatSession, type ReligiousBot } from '../../../types/interfaces';
 import { MessageList } from "./MessageList";
-import { getChatSession, sendMessage } from '../utils/api';
+import { getChatSession, sendMessage } from '../../../services/api';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from './ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '../../../components/ui/dropdown-menu';
 
 interface ChatWindowProps {
   selectedBot: ReligiousBot;
@@ -167,7 +167,7 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();

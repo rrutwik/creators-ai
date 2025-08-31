@@ -1,6 +1,6 @@
-import type { ChatMessage } from "../interfaces";
-import { MessageRole } from "../interfaces";
-import { Avatar, AvatarFallback } from "./ui/avatar";
+import type { ChatMessage } from "../../../types/interfaces";
+import { MessageRole } from "../../../types/interfaces";
+import { Avatar, AvatarFallback } from "../../../components/ui/avatar";
 
 interface MessageListProps {
     messages: ChatMessage[];
