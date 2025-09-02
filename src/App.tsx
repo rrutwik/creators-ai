@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef, useCallback, lazy } from 'react';
 import { LoginPage } from './features/auth/components/LoginPage';
-import { InstallPrompt } from './components/hooks/InstallPrompt';
+// import { InstallPrompt } from './components/hooks/InstallPrompt';
 import { Toaster } from './components/ui/sonner';
 import { getUserDetails, logout, updateProfile } from './services/api';
-import { registerServiceWorker, setupInstallPrompt } from './services/pwa';
+// import { registerServiceWorker, setupInstallPrompt } from './services/pwa';
 import Cookies from 'js-cookie';
 import type { User } from './types/interfaces';
 import { useTranslation } from 'react-i18next';
@@ -65,8 +65,8 @@ export default function App() {
 
   // Initialize PWA functionality
   useEffect(() => {
-    registerServiceWorker();
-    setupInstallPrompt();
+    // registerServiceWorker();
+    // setupInstallPrompt();
   }, []);
 
   // Apply theme to <html> and persist
