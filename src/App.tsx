@@ -11,6 +11,8 @@ import i18n from './i18n';
 import type { THEME_MODES } from './utils/consts';
 import { LanguageSwitcher } from './components/hooks/LanguageSwitcher';
 import { initGA, setUser as setAnalyticsUser, trackLogin, clearUser, trackThemeChange, trackLanguageChange, trackLogout as trackLogoutEvent } from './lib/analytics';
+import ChatInterface from './features/chat/components/ChatInterface';
+import { LazyLoadComponent } from './components/lazy/LazyLoadComponent';
 
 export default function App() {
   const { t } = useTranslation();
@@ -24,7 +26,7 @@ export default function App() {
     const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
     return prefersDark ? 'dark' : 'light';
   });
-  const ChatInterface = lazy(() => import('./features/chat/components/ChatInterface'));
+
   useEffect(() => {
     initGA();
   }, []);
@@ -159,9 +161,9 @@ export default function App() {
     <div className="min-h-screen bg-background">
       {!isAuthenticated && <LanguageSwitcher language={language} onChange={setLanguage} />}
       {!isAuthenticated ? (
-        <LoginPage onLogin={handleLogin} />
+          <LoginPage onLogin={handleLogin} />
       ) : (
-        <ChatInterface user={user} onLogout={handleLogout} onUserUpdated={handleUserUpdated} theme={theme} setTheme={setTheme} language={language} />
+        <LazyLoadComponent component={ChatInterface} user={user} onLogout={handleLogout} theme={theme} setTheme={setTheme} language={language} />
       )}
       <InstallPrompt />
       <Toaster />
