@@ -16,7 +16,7 @@ export function GoogleLoginComponent({ handleLoginSuccess, handleLoginError }: {
     }, []);
 
     return (
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4" style={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
             {/* <GoogleLogin
                 onSuccess={handleLoginSuccess}
                 onError={() => handleLoginError("Login failed, please try again.")}

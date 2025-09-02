@@ -1,6 +1,8 @@
-const CACHE_NAME = 'creatorsai-v1';
+const CACHE_NAME = 'creatorsai-1.0.0';
 const urlsToCache = [
   '/',
+  '/static/js/bundle.js',
+  '/static/css/main.css',
   '/manifest.json'
 ];
 
