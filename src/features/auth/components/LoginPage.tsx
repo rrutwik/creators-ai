@@ -12,12 +12,13 @@ interface LoginPageProps {
 }
 
 export function LoginPage({ onLogin }: LoginPageProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const clientId = '201954194593-36t0nksh9jusg01k58et81ct27objt26.apps.googleusercontent.com';
 
   const handleLoginSuccess = async (response: any) => {
     try {
-      const { data } = await loginWithGoogle(response);
+      const currentLanguage = i18n.language;
+      const { data } = await loginWithGoogle({ ...response, language: currentLanguage });
       Cookies.set('session_token', data.sessionToken, { expires: 1 });
       Cookies.set('refresh_token', data.refreshToken, { expires: 1 });
       const user = await getUserDetails(true);
