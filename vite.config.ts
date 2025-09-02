@@ -32,10 +32,5 @@ export default defineConfig({
     minify: 'esbuild',
     target: 'esnext',
     sourcemap: false,
-  },
-  server: {
-    headers: {
-      'Cache-Control': 'public, max-age=31536000, immutable',
-    },
-  },
+  }
 });
