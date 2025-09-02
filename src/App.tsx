@@ -165,7 +165,7 @@ export default function App() {
       ) : (
         <LazyLoadComponent component={ChatInterface} user={user} onLogout={handleLogout} theme={theme} setTheme={setTheme} language={language} />
       )}
-      <InstallPrompt />
+      {/* <InstallPrompt /> */}
       <Toaster />
     </div>
   );
