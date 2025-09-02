@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import tailwindcss from '@tailwindcss/vite';
 import { visualizer } from 'rollup-plugin-visualizer';
+import compression from 'vite-plugin-compression';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -13,7 +14,9 @@ export default defineConfig({
       gzipSize: true,
       brotliSize: true,
       filename: 'bundle-analysis.html'
-    })
+    }),
+    compression({ algorithm: 'gzip', ext: '.gz' }),
+    compression({ algorithm: 'brotliCompress', ext: '.br' }),
   ],
   build: {
     rollupOptions: {
@@ -25,7 +28,7 @@ export default defineConfig({
         },
       },
     },
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 200,
     minify: 'esbuild',
     target: 'esnext',
     sourcemap: false,

@@ -1,6 +1,6 @@
 import ReactGA from 'react-ga4';
 
-export const GA_MEASUREMENT_ID = '';
+export const GA_MEASUREMENT_ID = 'G-ZQ6YKQY8JC';
 
 // Guard + queue to avoid race conditions when GA is not yet initialized
 let gaInitialized = false;

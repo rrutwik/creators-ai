@@ -32,7 +32,10 @@ jobs:
           aws-region: us-east-1  # Change to your region
 
       - name: Sync to S3
-        run: aws s3 sync dist/ s3://creators-gpt/ --delete
+        run: |
+          aws s3 sync dist/ s3://creators-gpt/ --exclude "*" --include "*.gz" --content-encoding gzip --delete
+          aws s3 sync dist/ s3://creators-gpt/ --exclude "*" --include "*.br" --content-encoding br --delete
+          aws s3 sync dist/ s3://creators-gpt/ --exclude "*.gz" --exclude "*.br" --delete
 
       - name: Invalidate CloudFront
         run: aws cloudfront create-invalidation --distribution-id E14A7B5QSCGPD8 --paths '/*'
