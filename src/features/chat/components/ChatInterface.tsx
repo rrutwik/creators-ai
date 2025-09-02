@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, memo } from 'react';
 import { Sidebar } from '../../../components/layout/Sidebar';
 import { ChatWindow } from './ChatWindow';
 import { ProfileModal } from '../../auth/components/ProfileModal';
@@ -21,7 +21,7 @@ interface ChatInterfaceProps {
   onUserUpdated?: (user: User) => void;
 }
 
-export function ChatInterface({ user, onLogout, onUserUpdated, theme, setTheme, language }: ChatInterfaceProps) {
+const ChatInterface = memo(function ChatInterface({ user, onLogout, onUserUpdated, theme, setTheme, language }: ChatInterfaceProps) {
   const { t } = useTranslation();
   const [religiousBots, setReligiousBots] = useState<ReligiousBot[]>([]);
   const [selectedBot, setSelectedBot] = useState<ReligiousBot | null>(null);
@@ -293,4 +293,6 @@ export function ChatInterface({ user, onLogout, onUserUpdated, theme, setTheme, 
       )}
     </div>
   );
-}
+});
+
+export default ChatInterface;

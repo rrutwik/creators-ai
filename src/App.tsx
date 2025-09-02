@@ -1,6 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback, lazy } from 'react';
 import { LoginPage } from './features/auth/components/LoginPage';
-import { ChatInterface } from './features/chat/components/ChatInterface';
 import { InstallPrompt } from './components/hooks/InstallPrompt';
 import { Toaster } from './components/ui/sonner';
 import { getUserDetails, logout, updateProfile } from './services/api';
@@ -25,7 +24,7 @@ export default function App() {
     const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
     return prefersDark ? 'dark' : 'light';
   });
-
+  const ChatInterface = lazy(() => import('./features/chat/components/ChatInterface'));
   useEffect(() => {
     initGA();
   }, []);
@@ -85,7 +84,7 @@ export default function App() {
     trackLanguageChange(language);
   }, [language]);
 
-  const handleLogin = (userData: User) => {
+  const handleLogin = useCallback((userData: User) => {
     if (!userData) return;
     setUser(userData);
     if (userData?.language) {
@@ -112,9 +111,9 @@ export default function App() {
       credits: userData.credits,
     });
     trackLogin('google');
-  };
+  },[]);
 
-  const handleUserUpdated = (updated: any) => {
+  const handleUserUpdated = useCallback((updated: any) => {
     setUser(updated);
     const lng = updated?.language || 'en';
     if (i18n.language !== lng) {
@@ -123,9 +122,9 @@ export default function App() {
       setLanguage(lng);
       trackLanguageChange(lng);
     }
-  };
+  },[]);
 
-  const handleLogout = async () => {
+  const handleLogout = useCallback(async () => {
     try {
       await logout();
     } catch (error) {
@@ -140,18 +139,18 @@ export default function App() {
       // GA4: track logout
       trackLogoutEvent();
     }
-  };
+  },[]);
 
-  // if (isAuthenticated === null) {
-  //   return (
-  //     <div className="min-h-screen bg-background flex items-center justify-center">
-  //       <div className="text-center">
-  //         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-  //         <p className="text-muted-foreground">{t('common.loading')}</p>
-  //       </div>
-  //     </div>
-  //   );
-  // }
+  if (isAuthenticated === null) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">{t('common.loading')}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
