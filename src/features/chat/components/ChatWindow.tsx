@@ -83,13 +83,18 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
     };
   }, [selectedChat]);
   
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  const scrollToBottom = useCallback(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'end',
+      });
+    }
+  }, []);
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, isTyping, streamingText]);
 
   useEffect(() => {
     if (selectedChat) return;
@@ -111,6 +116,10 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
   const startPolling = useCallback(
     async (chatUuid: string) => {
       console.log('Starting polling for chat', chatUuid);
+      if (pollingInterval.current) {
+        console.log('Polling interval already exists');
+        return;
+      }
       pollingInterval.current = setInterval(async () => {
         const chatSession = await fetchNewMessages(chatUuid);
 
@@ -195,6 +204,7 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
                   return newMessages;
                 });
                 lastAssistantMessage.current = null;
+                setStreamingText('');
                 setStreamingTextIndex(0);
                 if (typingInterval.current) {
                   clearInterval(typingInterval.current);
@@ -206,7 +216,7 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
             return newIndex;
           });
         }
-      }, 50); // Reduced interval for smoother typing
+      }, 30); // Reduced interval for smoother typing
     }
 
     return () => {
@@ -260,8 +270,8 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
       </div>
 
       {/* Messages */}
-      <ScrollArea className="flex-1 min-h-0 p-4">
-        <div className="space-y-4 pb-4">
+      <ScrollArea className="flex-1 min-h-0">
+        <div className="p-4 space-y-4 pb-4">
           {messages.length === 0 && !isTyping && (
             <div className="flex items-center justify-center h-full min-h-[300px]">
               <div className="text-center max-w-md">

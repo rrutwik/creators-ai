@@ -17,7 +17,7 @@ export function LanguageSwitcher({ language, onChange }: LanguageSwitcherProps) 
   return (
     <select
       aria-label="Change language"
-      className="fixed top-4 right-28 z-50 border bg-card text-card-foreground px-2 py-2 text-sm rounded-md shadow-sm"
+      className="fixed top-4 right-4 z-50 border bg-card text-card-foreground px-2 py-2 text-sm rounded-md shadow-sm"
       value={i18n.language}
       onChange={(e) => {
         i18n.changeLanguage(e.target.value)
