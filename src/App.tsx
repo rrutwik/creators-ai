@@ -160,7 +160,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-background">
-      {!isAuthenticated && <LanguageSwitcher language={language} onChange={setLanguage} />}
+      {isAuthenticated == false && <LanguageSwitcher language={language} onChange={setLanguage} />}
       {isAuthenticated == false && (
         <LoginPage onLogin={handleLogin} />
       )}
