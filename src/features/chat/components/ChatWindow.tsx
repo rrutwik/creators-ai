@@ -29,6 +29,7 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
   const [streamingTextIndex, setStreamingTextIndex] = useState(0);
   const lastAssistantMessage = useRef<ChatMessage>(null);
   const [inputValue, setInputValue] = useState('');
+  const [isSending, setIsSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -151,6 +152,7 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
   const handleSendMessage = async () => {
     if (inputValue.trim() === '') return;
     let updatedSession: ChatSession;
+    setIsSending(true);
     try {
       try {
         const response = await sendMessage(inputValue, selectedChat?.uuid, selectedBot?._id);
@@ -161,6 +163,8 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
           return;
         }
         throw error;
+      } finally {
+        setIsSending(false);
       }
 
       const userMessage = updatedSession.messages.pop();
@@ -328,11 +332,11 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
             enterKeyHint="send"
             style={{ WebkitUserSelect: 'text' }}
             onTouchStart={(e) => e.stopPropagation()}
-            disabled={isTyping}
+            disabled={isTyping || isSending}
           />
           <Button
             onClick={handleSendMessage}
-            disabled={!inputValue.trim() || isTyping}
+            disabled={!inputValue.trim() || isTyping || isSending}
             className="h-12 w-12 p-0 flex-shrink-0 touch-manipulation"
           >
             <Send className="w-4 h-4" />
