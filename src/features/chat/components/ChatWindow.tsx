@@ -228,9 +228,9 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
   }, [isTyping, streamingTextIndex]);
 
   return (
-    <div className="flex flex-col h-full max-h-screen min-h-0">
+    <div className="flex flex-col h-[100dvh] max-h-[100dvh] overflow-hidden">
       {/* Header */}
-      <div className="p-4 border-b border-border bg-card flex items-center justify-between min-h-[72px] flex-shrink-0">
+      <div className="p-4 border-b border-border bg-card flex items-center justify-between h-[72px] flex-shrink-0">
         <div className="flex items-center space-x-3 min-w-0 flex-1">
           {isMobile && <Button
             variant="ghost"
@@ -270,7 +270,7 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
       </div>
 
       {/* Messages */}
-      <ScrollArea className="flex-1 min-h-0">
+      <ScrollArea className="flex-1 overflow-y-auto">
         <div className="p-4 space-y-4 pb-4">
           {messages.length === 0 && !isTyping && (
             <div className="flex items-center justify-center h-full min-h-[300px]">
@@ -314,21 +314,25 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
       </ScrollArea>
 
       {/* Input */}
-      <div className="p-4 border-t border-border bg-card flex-shrink-0">
-        <div className="flex space-x-3">
+      <div className="p-4 border-t border-border bg-card flex-shrink-0 w-full">
+        <div className="flex w-full gap-2">
           <Input
             ref={inputRef}
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder={t('chat.placeholder', { name: selectedBot.name })}
-            className="flex-1 h-12 text-base touch-manipulation"
+            className="flex-1 min-w-0 h-12 text-base touch-manipulation text-base-input"
+            inputMode="text"
+            enterKeyHint="send"
+            style={{ WebkitUserSelect: 'text' }}
+            onTouchStart={(e) => e.stopPropagation()}
             disabled={isTyping}
           />
           <Button
             onClick={handleSendMessage}
             disabled={!inputValue.trim() || isTyping}
-            className="h-12 px-4 touch-manipulation"
+            className="h-12 w-12 p-0 flex-shrink-0 touch-manipulation"
           >
             <Send className="w-4 h-4" />
           </Button>

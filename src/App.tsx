@@ -100,7 +100,7 @@ export default function App() {
     } else {
       updateProfile({ language: i18n.language });
     }
-    
+
     setIsAuthenticated(true);
 
     // GA4: login event + set user
@@ -113,7 +113,7 @@ export default function App() {
       credits: userData.credits,
     });
     trackLogin('google');
-  },[]);
+  }, []);
 
   const handleUserUpdated = useCallback((updated: any) => {
     setUser(updated);
@@ -124,7 +124,7 @@ export default function App() {
       setLanguage(lng);
       trackLanguageChange(lng);
     }
-  },[]);
+  }, []);
 
   const handleLogout = useCallback(async () => {
     try {
@@ -141,7 +141,7 @@ export default function App() {
       // GA4: track logout
       trackLogoutEvent();
     }
-  },[]);
+  }, []);
 
   useEffect(() => {
   }, [language, isAuthenticated]);
@@ -160,9 +160,10 @@ export default function App() {
   return (
     <div className="min-h-screen bg-background">
       {!isAuthenticated && <LanguageSwitcher language={language} onChange={setLanguage} />}
-      {!isAuthenticated ? (
-          <LoginPage onLogin={handleLogin} />
-      ) : (
+      {isAuthenticated == false && (
+        <LoginPage onLogin={handleLogin} />
+      )}
+      {isAuthenticated == true && (
         <LazyLoadComponent component={ChatInterface} user={user} onLogout={handleLogout} theme={theme} setTheme={setTheme} language={language} />
       )}
       {/* <InstallPrompt /> */}
