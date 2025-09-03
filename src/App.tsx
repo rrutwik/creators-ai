@@ -13,6 +13,7 @@ import { LanguageSwitcher } from './components/hooks/LanguageSwitcher';
 import { initGA, setUser as setAnalyticsUser, trackLogin, clearUser, trackThemeChange, trackLanguageChange, trackLogout as trackLogoutEvent } from './lib/analytics';
 import ChatInterface from './features/chat/components/ChatInterface';
 import { LazyLoadComponent } from './components/lazy/LazyLoadComponent';
+import { registerServiceWorker, setupInstallPrompt } from './services/pwa';
 
 export default function App() {
   const { t } = useTranslation();
@@ -65,8 +66,8 @@ export default function App() {
 
   // Initialize PWA functionality
   useEffect(() => {
-    // registerServiceWorker();
-    // setupInstallPrompt();
+    registerServiceWorker();
+    setupInstallPrompt();
   }, []);
 
   // Apply theme to <html> and persist

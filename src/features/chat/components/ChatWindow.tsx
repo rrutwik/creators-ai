@@ -270,7 +270,7 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
       </div>
 
       {/* Messages */}
-      <ScrollArea className="flex-1 overflow-y-auto">
+      <ScrollArea className="flex-1 overflow-y-auto w-full">
         <div className="p-4 space-y-4 pb-4">
           {messages.length === 0 && !isTyping && (
             <div className="flex items-center justify-center h-full min-h-[300px]">
@@ -314,8 +314,9 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
       </ScrollArea>
 
       {/* Input */}
-      <div className="p-4 border-t border-border bg-card flex-shrink-0 w-full">
-        <div className="flex w-full gap-2">
+      <div className="border-t border-border bg-card flex-shrink-0 w-full">
+        <div className="p-4 w-full max-w-full">
+          <div className="flex w-full gap-2">
           <Input
             ref={inputRef}
             value={inputValue}
@@ -336,10 +337,11 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
           >
             <Send className="w-4 h-4" />
           </Button>
+          </div>
+          <p className="text-xs text-muted-foreground mt-3 text-center">
+            {t('chat.disclaimer')}
+          </p>
         </div>
-        <p className="text-xs text-muted-foreground mt-3 text-center px-2">
-          {t('chat.disclaimer')}
-        </p>
       </div>
     </div>
   );
