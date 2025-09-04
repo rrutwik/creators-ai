@@ -11,6 +11,7 @@ import { LanguageSwitcher } from './components/hooks/LanguageSwitcher';
 import { initGA, setUser as setAnalyticsUser, trackLogin, clearUser, trackThemeChange, trackLanguageChange, trackLogout as trackLogoutEvent } from './lib/analytics';
 import ChatInterface from './features/chat/components/ChatInterface';
 import { LazyLoadComponent } from './components/lazy/LazyLoadComponent';
+import { InstallPrompt } from './components/hooks/InstallPrompt';
 
 export default function App() {
   const { t } = useTranslation();
@@ -151,6 +152,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-background">
+      {isAuthenticated != null && <InstallPrompt />}
       {isAuthenticated == false && <LanguageSwitcher language={language} onChange={setLanguage} />}
       {isAuthenticated == false && (
         <LoginPage onLogin={handleLogin} />
