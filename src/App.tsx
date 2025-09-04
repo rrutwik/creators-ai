@@ -1,9 +1,7 @@
-import { useState, useEffect, useRef, useCallback, lazy } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { LoginPage } from './features/auth/components/LoginPage';
-// import { InstallPrompt } from './components/hooks/InstallPrompt';
 import { Toaster } from './components/ui/sonner';
 import { getUserDetails, logout, updateProfile } from './services/api';
-// import { registerServiceWorker, setupInstallPrompt } from './services/pwa';
 import Cookies from 'js-cookie';
 import type { User } from './types/interfaces';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +11,6 @@ import { LanguageSwitcher } from './components/hooks/LanguageSwitcher';
 import { initGA, setUser as setAnalyticsUser, trackLogin, clearUser, trackThemeChange, trackLanguageChange, trackLogout as trackLogoutEvent } from './lib/analytics';
 import ChatInterface from './features/chat/components/ChatInterface';
 import { LazyLoadComponent } from './components/lazy/LazyLoadComponent';
-import { registerServiceWorker, setupInstallPrompt } from './services/pwa';
 
 export default function App() {
   const { t } = useTranslation();
@@ -62,12 +59,6 @@ export default function App() {
     };
 
     checkAuth();
-  }, []);
-
-  // Initialize PWA functionality
-  useEffect(() => {
-    registerServiceWorker();
-    setupInstallPrompt();
   }, []);
 
   // Apply theme to <html> and persist

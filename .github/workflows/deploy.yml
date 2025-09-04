@@ -35,4 +35,4 @@ jobs:
         run: aws s3 sync dist/ s3://creators-gpt/ --delete
 
       - name: Invalidate CloudFront
-        run: aws cloudfront create-invalidation --distribution-id E14A7B5QSCGPD8 --paths '/*'
+        run: aws cloudfront create-invalidation --distribution-id E14A7B5QSCGPD8 --paths '/index.html'
