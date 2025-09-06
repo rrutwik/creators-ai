@@ -1,6 +1,6 @@
 import axios, { type AxiosInstance, type AxiosResponse } from 'axios';
 import Cookies from 'js-cookie';
-import { type AuthResponse, type ChatDetails, type ChatSession, type ReligiousBot, type User } from '../types/interfaces';
+import { type AuthResponse, type ChatBot, type ChatDetails, type ChatSession, type ReligiousBot, type UpdateChatBotRequest, type User } from '../types/interfaces';
 
 const BASE_URL = 'https://backend-api.techkarmic.com';
 
@@ -119,8 +119,35 @@ export const getAvailableBots = async () => {
     );
 }
 
-export const updateProfile = (body: Partial<User>) => {
-  return handleRequest<{ data: User }>(
-    () => getAuthenticatedAxiosInstance().patch('/auth/me', body)
-  ).then(response => response.data);
+export const updateProfile = async (body: Partial<User>) => {
+  const response = await handleRequest<{ data: User; }>(
+        () => getAuthenticatedAxiosInstance().patch('/auth/me', body)
+    );
+    return response.data;
+};
+
+// export const createCounselor = (body: CreateCounselorRequest) => {
+//   return handleRequest<{ data: Counselor }>(
+//     () => getAuthenticatedAxiosInstance().post('/chatbots', body)
+//   ).then(response => response.data);
+// };
+
+export const editChatBot = async (body: UpdateChatBotRequest) => {
+  const response = await handleRequest<{ data: ChatBot; }>(
+        () => getAuthenticatedAxiosInstance().put(`/admin/chatbot/${body._id}`, body)
+    );
+    return response.data;
+};
+
+// export const deleteChatBot = (id: string) => {
+//   return handleRequest<{ data: ChatBot }>(
+//     () => getAuthenticatedAxiosInstance().delete(`/chatbots/${id}`)
+//   ).then(response => response.data);
+// };
+  
+
+export const listAllChatBots = async () => {
+  const response = await handleRequest<{ records: ChatBot[]; total: number; }>(() => getAuthenticatedAxiosInstance().get('/admin/chatbot')
+    );
+    return response;
 };

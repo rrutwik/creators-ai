@@ -95,3 +95,28 @@ export const MessageRole = {
 } as const;
 
 export type MessageRole = typeof MessageRole[keyof typeof MessageRole];
+
+export interface ChatBot {
+  _id: string;
+  id: string;
+  name: string;
+  religion: string;
+  description: string;
+  avatar: string;
+  greeting: string;
+  prompt: string;
+}
+
+export interface CreateChatBotRequest {
+  id: string;
+  name: string;
+  religion: string;
+  description: string;
+  avatar: string;
+  greeting: string;
+  prompt: string;
+}
+
+export interface UpdateChatBotRequest extends CreateChatBotRequest {
+  _id: string;
+}
