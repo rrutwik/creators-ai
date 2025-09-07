@@ -14,7 +14,11 @@ Sentry.init({
       levels: ["log", "warn", "error"]
     }),
     Sentry.browserTracingIntegration(),
+    Sentry.replayIntegration()
   ],
+  sendDefaultPii: true,
+  replaysSessionSampleRate: 0.1,
+  replaysOnErrorSampleRate: 1.0,
   tracesSampleRate: 1.0,
   enableLogs: true,
 });
