@@ -22,6 +22,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
       Cookies.set('session_token', data.sessionToken, { expires: 1 });
       Cookies.set('refresh_token', data.refreshToken, { expires: 1 });
       const user = await getUserDetails(true);
+      console.log('Login successful:', user);
       onLogin(user);
     } catch (error) {
       console.error('Login failed:', error);

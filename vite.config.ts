@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react-swc'
 import tailwindcss from '@tailwindcss/vite'
 import { visualizer } from 'rollup-plugin-visualizer'
 import { VitePWA } from 'vite-plugin-pwa'
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 
 export default defineConfig({
   plugins: [
@@ -13,6 +14,12 @@ export default defineConfig({
       gzipSize: true,
       brotliSize: true,
       filename: 'bundle-analysis.html',
+    }),
+    sentryVitePlugin({
+      org: "test-company-1v",
+      project: "creators-ai",
+      authToken: "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",
+      telemetry: true
     }),
     VitePWA({
       registerType: 'autoUpdate', // auto-check for new SW
@@ -83,6 +90,6 @@ export default defineConfig({
     chunkSizeWarningLimit: 200,
     minify: 'esbuild',
     target: 'esnext',
-    sourcemap: false,
+    sourcemap: true,
   },
 })

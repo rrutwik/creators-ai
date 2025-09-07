@@ -100,12 +100,13 @@ export default function App() {
   }, [language]);
 
   const handleLogin = useCallback((userData: User) => {
-    if (!userData) return;
-    setUser(userData);
-    if (userData?.language) {
-      const lng = userData.language;
-      if (i18n.language !== lng) {
-        void i18n.changeLanguage(lng);
+    try {
+      if (!userData) return;
+      setUser(userData);
+      if (userData?.language) {
+        const lng = userData.language;
+        if (i18n.language !== lng) {
+          void i18n.changeLanguage(lng);
         // keep local state in sync + track
         setLanguage(lng);
         trackLanguageChange(lng);
@@ -126,6 +127,9 @@ export default function App() {
       credits: userData.credits,
     });
     trackLogin("google");
+  } catch (error) {
+    console.error("Login error:", error);
+  }
   }, []);
 
   const handleLogout = useCallback(async () => {

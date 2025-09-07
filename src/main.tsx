@@ -5,6 +5,15 @@ import App from './App.tsx'
 import './styles/globals.css';  
 import './i18n';
 import { registerSW } from 'virtual:pwa-register';
+import * as Sentry from '@sentry/react';
+
+Sentry.init({
+  dsn: "https://e18cb8ca1f0b60491c32335a924ee708@o4507185345527808.ingest.us.sentry.io/4507185347428352",
+  integrations: [
+    Sentry.consoleLoggingIntegration({ levels: ["log", "warn", "error"] }),
+  ],
+  enableLogs: true,
+});
 
 const updateSW = registerSW({
   onNeedRefresh() {

@@ -7,8 +7,10 @@ export function GoogleLoginComponent({ handleLoginSuccess, handleLoginError }: {
         // Expose the React handler to the global window object
         (window as any).handleDivManualLoginSuccess = (response: any) => {
             try {
+                console.log("Login success:", response);
                 handleLoginSuccess(response);
             } catch (err) {
+                console.error("Login error:", err);
                 handleLoginError(err);
             }
         };
