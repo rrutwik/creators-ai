@@ -11,7 +11,9 @@ Sentry.init({
   dsn: "https://e18cb8ca1f0b60491c32335a924ee708@o4507185345527808.ingest.us.sentry.io/4507185347428352",
   integrations: [
     Sentry.consoleLoggingIntegration({ levels: ["log", "warn", "error"] }),
+    Sentry.browserTracingIntegration(),
   ],
+  tracesSampleRate: 1.0,
   enableLogs: true,
 });
 
