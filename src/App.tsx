@@ -30,6 +30,7 @@ import ChatInterface from "./features/chat/components/ChatInterface";
 import { LazyLoadComponent } from "./components/lazy/LazyLoadComponent";
 import { InstallPrompt } from "./components/hooks/InstallPrompt";
 import AdminChatBot from "./features/admin/AdminChatBot";
+import * as Sentry from "@sentry/react";
 
 export default function App() {
   const { t } = useTranslation();
@@ -101,8 +102,20 @@ export default function App() {
 
   const handleLogin = useCallback((userData: User) => {
     try {
+      Sentry.captureEvent({
+        message: 'Login successful',
+        extra: {
+          user,
+        },
+      });
       if (!userData) return;
       setUser(userData);
+      Sentry.captureEvent({
+        message: 'User set',
+        extra: {
+          user,
+        },
+      });
       if (userData?.language) {
         const lng = userData.language;
         if (i18n.language !== lng) {
@@ -128,6 +141,13 @@ export default function App() {
     });
     trackLogin("google");
   } catch (error) {
+    Sentry.captureEvent({
+      message: 'Login error',
+      extra: {
+        error,
+        user
+      },
+    });
     console.error("Login error:", error);
   }
   }, []);

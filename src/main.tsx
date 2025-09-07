@@ -8,14 +8,18 @@ import { registerSW } from 'virtual:pwa-register';
 import * as Sentry from '@sentry/react';
 
 Sentry.init({
-  dsn: "https://e18cb8ca1f0b60491c32335a924ee708@o4507185345527808.ingest.us.sentry.io/4507185347428352",
+  dsn: "https://6b2849f870a9dff3b140c21831846a83@o4507185345527808.ingest.us.sentry.io/4509979759083520",
   integrations: [
-    Sentry.consoleLoggingIntegration({ levels: ["log", "warn", "error"] }),
+    Sentry.consoleLoggingIntegration({ 
+      levels: ["log", "warn", "error"]
+    }),
     Sentry.browserTracingIntegration(),
   ],
   tracesSampleRate: 1.0,
   enableLogs: true,
 });
+
+Sentry.logger.info('User triggered test log', { log_source: 'sentry_test' })
 
 const updateSW = registerSW({
   onNeedRefresh() {

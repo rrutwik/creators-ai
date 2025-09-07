@@ -6,6 +6,7 @@ import { getUserDetails, loginWithGoogle } from '../../../services/api';
 import { GoogleLoginComponent } from './GoogleLogin';
 import { useTranslation } from 'react-i18next';
 import type { User } from '../../../types/interfaces';
+import * as Sentry from "@sentry/react";
 
 interface LoginPageProps {
   onLogin: (user: User) => void;
@@ -23,14 +24,32 @@ export function LoginPage({ onLogin }: LoginPageProps) {
       Cookies.set('refresh_token', data.refreshToken, { expires: 1 });
       const user = await getUserDetails(true);
       console.log('Login successful:', user);
+      Sentry.captureEvent({
+        message: 'Login successful',
+        extra: {
+          user,
+        },
+      });
       onLogin(user);
     } catch (error) {
       console.error('Login failed:', error);
+      Sentry.captureEvent({
+        message: 'Login failed',
+        extra: {
+          error,
+        },
+      });
     }
   };
 
   const handleLoginError = (error: any) => {
     console.error('Login failed:', error);
+    Sentry.captureEvent({
+      message: 'Login failed',
+      extra: {
+        error,
+      },
+    });
   };
 
   return (

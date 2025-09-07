@@ -1,6 +1,7 @@
 import { GoogleLogin } from "@react-oauth/google";
 import { CardContent } from '../../../components/ui/card';
 import { useEffect } from 'react';
+import * as Sentry from "@sentry/react";
 
 export function GoogleLoginComponent({ handleLoginSuccess, handleLoginError }: { handleLoginSuccess: (response: any) => void, handleLoginError: (error: any) => void }) {
     useEffect(() => {
@@ -8,14 +9,16 @@ export function GoogleLoginComponent({ handleLoginSuccess, handleLoginError }: {
         (window as any).handleDivManualLoginSuccess = (response: any) => {
             try {
                 console.log("Login success:", response);
+                Sentry.captureMessage(`Login success: ${JSON.stringify(response)}`, "info");
                 handleLoginSuccess(response);
             } catch (err) {
                 console.error("Login error:", err);
+                Sentry.captureMessage(`Login error: ${JSON.stringify(err)}`, "error");
                 handleLoginError(err);
             }
         };
 
-    }, []);
+    }, [handleLoginError, handleLoginSuccess]);
 
     return (
         <CardContent className="space-y-4" style={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
