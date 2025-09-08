@@ -17,7 +17,9 @@ export function GoogleLoginComponent({ handleLoginSuccess, handleLoginError }: {
                 handleLoginError(err);
             }
         };
-
+        return () => {
+            (window as any).handleDivManualLoginSuccess = undefined;
+        }
     }, [handleLoginError, handleLoginSuccess]);
 
     return (
