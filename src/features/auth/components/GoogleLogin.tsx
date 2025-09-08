@@ -1,49 +1,72 @@
 import { GoogleLogin } from "@react-oauth/google";
-import { CardContent } from '../../../components/ui/card';
-import { useEffect } from 'react';
+import { CardContent } from "../../../components/ui/card";
+import { useEffect } from "react";
 import * as Sentry from "@sentry/react";
 
-export function GoogleLoginComponent({ handleLoginSuccess, handleLoginError }: { handleLoginSuccess: (response: any) => void, handleLoginError: (error: any) => void }) {
-    useEffect(() => {
-        // Expose the React handler to the global window object
-        (window as any).handleDivManualLoginSuccess = (response: any) => {
-            try {
-                console.log("Login success:", response);
-                Sentry.captureMessage(`Login success: ${JSON.stringify(response)}`, "info");
-                handleLoginSuccess(response);
-            } catch (err) {
-                console.error("Login error:", err);
-                Sentry.captureMessage(`Login error: ${JSON.stringify(err)}`, "error");
-                handleLoginError(err);
-            }
-        };
-        return () => {
-            (window as any).handleDivManualLoginSuccess = undefined;
-        }
-    }, [handleLoginError, handleLoginSuccess]);
+export function GoogleLoginComponent({
+  handleLoginSuccess,
+  handleLoginError,
+}: {
+  handleLoginSuccess: (response: any) => void;
+  handleLoginError: (error: any) => void;
+}) {
+//   useEffect(() => {
+//     // Expose the React handler to the global window object
+//     (window as any).handleDivManualLoginSuccess = (response: any) => {
+//       try {
+//         console.log("Login success:", response);
+//         Sentry.captureMessage(
+//           `Login success: ${JSON.stringify(response)}`,
+//           "info"
+//         );
+//         handleLoginSuccess(response);
+//       } catch (err) {
+//         console.error("Login error:", err);
+//         Sentry.captureMessage(`Login error: ${JSON.stringify(err)}`, "error");
+//         handleLoginError(err);
+//       }
+//     };
+//     return () => {
+//       (window as any).handleDivManualLoginSuccess = undefined;
+//     };
+//   }, [handleLoginError, handleLoginSuccess]);
 
-    return (
-        <CardContent className="space-y-4" style={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
-            {/* <GoogleLogin
-                onSuccess={handleLoginSuccess}
-                onError={() => handleLoginError("Login failed, please try again.")}
-                containerProps={
-                    {
-                        style: {
-                            width: "100%",
-                            height: "100%",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center"
-                        }
-                    }
-                }
-                text="continue_with"
-                theme="outline"
-                shape="rectangular"
-                size="large"
-            /> */}
-            <div id="g_id_onload"
+  return (
+    <CardContent className="w-full h-full flex justify-center items-center">
+      <GoogleLogin
+        onSuccess={(response) => {
+          try {
+            console.log("Login success:", response);
+            Sentry.captureMessage(
+              `Login success: ${JSON.stringify(response)}`,
+              "info"
+            );
+            handleLoginSuccess(response);
+          } catch (err) {
+            console.error("Login error:", err);
+            Sentry.captureException(err);
+            handleLoginError(err);
+          }
+        }}
+        onError={() => {
+          Sentry.captureMessage("Login failed", "error");
+          handleLoginError("Login failed, please try again.");
+        }}
+        containerProps={{
+          style: {
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          },
+        }}
+        text="signin_with"
+        theme="filled_blue"
+        shape="pill"
+        size="large"
+        width="320"
+      />
+      {/* <div id="g_id_onload"
                 data-client_id="201954194593-36t0nksh9jusg01k58et81ct27objt26.apps.googleusercontent.com"
                 data-context="signin"
                 data-ux_mode="popup"
@@ -62,7 +85,7 @@ export function GoogleLoginComponent({ handleLoginSuccess, handleLoginError }: {
                 data-locale="en-US"
                 data-logo_alignment="left"
                 data-width="300px">
-            </div>
-        </CardContent>
-    )
+            </div> */}
+    </CardContent>
+  );
 }

@@ -150,7 +150,7 @@ export default function App() {
     });
     console.error("Login error:", error);
   }
-  }, []);
+  }, [user]);
 
   const handleLogout = useCallback(async () => {
     try {
