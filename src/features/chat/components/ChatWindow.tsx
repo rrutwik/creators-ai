@@ -10,6 +10,7 @@ import { getChatSession, sendMessage } from '../../../services/api';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '../../../components/ui/dropdown-menu';
+import * as Sentry from "@sentry/react";
 
 interface ChatWindowProps {
   selectedBot: ReligiousBot;
@@ -63,6 +64,12 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
           setMessages(messages);
         }
       } catch (error) {
+        Sentry.captureException(error, {
+          extra: {
+            selectedChat,
+            selectedBot,
+          },
+        });
         console.error('Error fetching chat:', error);
       }
     };
@@ -109,10 +116,17 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
       const chatSession = data;
       return chatSession;
     } catch (error) {
+      Sentry.captureException(error, {
+        extra: {
+          chatId,
+          selectedBot,
+          selectedChat,
+        },
+      });
       console.error('Error fetching new messages:', error);
       return null;
     }
-  }, []);
+  }, [selectedBot, selectedChat]);
 
   const startPolling = useCallback(
     async (chatUuid: string) => {
@@ -162,6 +176,13 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
           onRequireAddCredits();
           return;
         }
+        Sentry.captureException(error, {
+          extra: {
+            inputValue,
+            selectedChat,
+            selectedBot,
+          },
+        });
         throw error;
       } finally {
         setIsSending(false);
@@ -176,6 +197,13 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
       onMessageSent(updatedSession.uuid);
       startPolling(updatedSession.uuid);
     } catch (error: any) {
+      Sentry.captureException(error, {
+        extra: {
+          inputValue,
+          selectedChat,
+          selectedBot,
+        },
+      });
       console.error('Error sending message:', error);
     }
   };

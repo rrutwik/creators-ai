@@ -33,9 +33,9 @@ export function LoginPage({ onLogin }: LoginPageProps) {
       onLogin(user);
     } catch (error) {
       console.error('Login failed:', error);
-      Sentry.captureEvent({
-        message: 'Login failed',
+      Sentry.captureException(error, {
         extra: {
+          response,
           error,
         },
       });

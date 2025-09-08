@@ -9,7 +9,7 @@ import { getAvailableBots, getPastChats, getChatSession } from '../../../service
 import type { ChatDetails, ReligiousBot, User } from '../../../types/interfaces';
 import { useTranslation } from 'react-i18next';
 import type { THEME_MODES } from '../../../utils/consts';
-import i18n from '../../../i18n';
+import * as Sentry from "@sentry/react";
 
 interface ChatInterfaceProps {
   user: User | null;
@@ -56,12 +56,17 @@ const ChatInterface = memo(function ChatInterface({ user, onLogout, onUserUpdate
         const bots = await getAvailableBots(); // Your API call
         setReligiousBots(bots.records);
       } catch (error) {
+        Sentry.captureException(error, {
+          extra: {
+            user,
+          },
+        });
         console.error('Failed to fetch bots:', error);
       }
     };
 
     fetchBots();
-  }, [i18n.language]);
+  }, []);
 
   const handleToggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -121,6 +126,11 @@ const ChatInterface = memo(function ChatInterface({ user, onLogout, onUserUpdate
         setChatHistory(response.data);
         setLoadingChatHistory(false);
       } catch (error) {
+        Sentry.captureException(error, {
+          extra: {
+            user,
+          },
+        });
         console.error('Error fetching chat history:', error);
       }
     };
@@ -154,6 +164,11 @@ const ChatInterface = memo(function ChatInterface({ user, onLogout, onUserUpdate
         );
       }
     } catch (error) {
+      Sentry.captureException(error, {
+        extra: {
+          user,
+        },
+      });
       console.error('Error updating chat session:', error);
     }
   };

@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { Button } from '../ui/button';
 import { X, Download, Smartphone, Globe, SmartphoneIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import * as Sentry from "@sentry/react";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<{ outcome: 'accepted' | 'dismissed' }>;
@@ -101,6 +102,14 @@ export function InstallPrompt() {
       // Hide the prompt
       handleDismiss();
     } catch (error) {
+      Sentry.captureException(error, {
+        extra: {
+          platform,
+          showPrompt,
+          deferredPrompt,
+          isInstalling,
+        },
+      });
       console.error('Error during installation:', error);
     } finally {
       setIsInstalling(false);

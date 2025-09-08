@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { ChatBotListForm } from "../../components/layout/ChatBotList";
 import { ChatBotForm } from "../../components/layout/ChatBotForm";
@@ -11,7 +11,7 @@ import type {
 import { listAllChatBots, editChatBot } from "../../services/api";
 import { Toaster } from "../../components/ui/sonner";
 import { useNavigate } from "react-router-dom";
-
+import * as Sentry from "@sentry/react";
 type ViewMode = "list" | "create" | "edit";
 
 export default function AdminChatBot({ user }: { user: User | null}) {
@@ -22,25 +22,31 @@ export default function AdminChatBot({ user }: { user: User | null}) {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    if (user === null || user === undefined || user?.email != "rutwik2808@gmail.com") {
-      navigate("/");
-    }
-    loadChatBots();
-  }, [navigate, user]);
-
-  const loadChatBots = async () => {
+  const loadChatBots = useCallback(async () => {
     try {
       setIsLoading(true);
       const data = await listAllChatBots();
       setChatBots(data.records);
     } catch (error) {
       toast.error("Failed to load chatbots");
+      Sentry.captureException(error, {
+        extra: {
+          user,
+        },
+      });
       console.error("Error loading chatbots:", error);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user === null || user === undefined || user?.email != "rutwik2808@gmail.com") {
+      navigate("/");
+    }
+    loadChatBots();
+  }, [loadChatBots, navigate, user]);
+
 
   const handleCreate = () => {
     // setEditingCounselor(null);

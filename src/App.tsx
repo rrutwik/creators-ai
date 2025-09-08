@@ -141,11 +141,9 @@ export default function App() {
     });
     trackLogin("google");
   } catch (error) {
-    Sentry.captureEvent({
-      message: 'Login error',
+    Sentry.captureException(error, {
       extra: {
-        error,
-        user
+        user,
       },
     });
     console.error("Login error:", error);
