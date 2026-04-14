@@ -104,7 +104,7 @@ export const getPastChats = async (offset: number, limit: number) => {
 };
 
 export const getChatSession = (chatId: string) => {
-    return handleRequest<{data: ChatSession}>(() => getAuthenticatedAxiosInstance().get(`/chat/${chatId}`));
+    return handleRequest<{ data: ChatSession }>(() => getAuthenticatedAxiosInstance().get(`/chat/${chatId}`));
 };
 
 export const sendMessage = (message: string, chatUUID?: string, chatbot_id?: string) => {
@@ -120,8 +120,8 @@ export const getAvailableBots = async () => {
 }
 
 export const updateProfile = async (body: Partial<User>) => {
-  const response = await handleRequest<{ data: User; }>(
-        () => getAuthenticatedAxiosInstance().patch('/auth/me', body)
+    const response = await handleRequest<{ data: User; }>(
+        () => getAuthenticatedAxiosInstance().put('/user/profile', body)
     );
     return response.data;
 };
@@ -133,7 +133,7 @@ export const updateProfile = async (body: Partial<User>) => {
 // };
 
 export const editChatBot = async (body: UpdateChatBotRequest) => {
-  const response = await handleRequest<{ data: ChatBot; }>(
+    const response = await handleRequest<{ data: ChatBot; }>(
         () => getAuthenticatedAxiosInstance().put(`/admin/chatbot/${body._id}`, body)
     );
     return response.data;
@@ -144,10 +144,10 @@ export const editChatBot = async (body: UpdateChatBotRequest) => {
 //     () => getAuthenticatedAxiosInstance().delete(`/chatbots/${id}`)
 //   ).then(response => response.data);
 // };
-  
+
 
 export const listAllChatBots = async () => {
-  const response = await handleRequest<{ records: ChatBot[]; total: number; }>(() => getAuthenticatedAxiosInstance().get('/admin/chatbot')
+    const response = await handleRequest<{ records: ChatBot[]; total: number; }>(() => getAuthenticatedAxiosInstance().get('/admin/chatbot')
     );
     return response;
 };
