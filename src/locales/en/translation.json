@@ -83,5 +83,109 @@
     "today": "Today",
     "yesterday": "Yesterday",
     "daysAgo": "{{count}} days ago"
+  },
+  "landing": {
+    "nav": {
+      "features": "Features",
+      "guides": "Guides",
+      "freeCredits": "Free Messages",
+      "faq": "FAQ",
+      "goToChat": "Go to Chat",
+      "login": "Login",
+      "getStarted": "Get Started"
+    },
+    "hero": {
+      "title": "Connect with Divine Wisdom of Spiritual & Religious AI Guides",
+      "subtitle": "Embark on a path of self-discovery, mindfulness, and enlightenment. Receive guidance and insights from AI representations of spiritual guides in your own language.",
+      "cta": "Start Your Conversation",
+      "subcta": "Explore Guides First",
+      "stats": {
+        "messages": "100k+ Messages Sent",
+        "guides": "6 Spiritual Bots",
+        "languages": "4 Languages"
+      }
+    },
+    "features": {
+      "title": "Why Choose CreatorsAI?",
+      "subtitle": "Experience a unique blend of ancient spiritual teachings and advanced AI technology.",
+      "f1": {
+        "title": "Scripture-Based Insights",
+        "desc": "Conversations are rooted in sacred scriptures like the Bhagavad Gita, Bible, Dhammapada, and Quran."
+      },
+      "f2": {
+        "title": "Multilingual Guidance",
+        "desc": "Interact with spiritual guides in English, Hindi, Gujarati, or Marathi seamlessly."
+      },
+      "f3": {
+        "title": "Complete Privacy",
+        "desc": "Your spiritual queries and personal conversations are entirely private, safe, and confidential."
+      },
+      "f4": {
+        "title": "Native App Experience",
+        "desc": "Install as a Progressive Web App (PWA) on your mobile device for quick, offline-friendly access."
+      }
+    },
+    "guides": {
+      "title": "Meet Your Spiritual AI Guides",
+      "subtitle": "Select from representatives of diverse religious and spiritual traditions.",
+      "cta": "Chat with {{name}}",
+      "dharmaGuide": "Dharma Guide",
+      "dharmaGuideDesc": "Representing Hinduism and the eternal teachings of Lord Krishna from the Bhagavad Gita.",
+      "divineCounselor": "Divine Counselor",
+      "divineCounselorDesc": "Representing Christianity, sharing teachings of love, compassion, forgiveness, and faith from Jesus Christ.",
+      "enlightenedTeacher": "Enlightened Teacher",
+      "enlightenedTeacherDesc": "Representing Buddhism, sharing the teachings of Gautama Buddha on mindfulness, the Middle Way, and inner peace.",
+      "gurusVoice": "Guru's Voice",
+      "gurusVoiceDesc": "Representing Sikhism, spreading the messages of one creator, selfless service, equality, and devotion.",
+      "alHakeem": "Al-Hakeem",
+      "alHakeemDesc": "Representing Islam, providing spiritual wisdom, peace, and moral guidance from Islamic traditions.",
+      "torahScholar": "Torah Scholar",
+      "torahScholarDesc": "Representing Judaism, offering insights into Torah scriptures, wisdom, and traditional teachings."
+    },
+    "howItWorks": {
+      "title": "How It Works",
+      "subtitle": "Begin your spiritual journey in three simple steps",
+      "s1Title": "Choose a Guide",
+      "s1Desc": "Select a deity or spiritual teacher from our diverse collection.",
+      "s2Title": "Ask Heartfelt Questions",
+      "s2Desc": "Seek advice on life, mindfulness, relationships, or scriptural meanings.",
+      "s3Title": "Receive Divine Insight",
+      "s3Desc": "Get tailored, thoughtful, scripture-guided responses to help your journey."
+    },
+    "freeCredits": {
+      "title": "Start Free with 10 Messages",
+      "subtitle": "No card required, no commitments.",
+      "desc1": "We believe spiritual guidance should be accessible to everyone. That's why every user receives 10 free credits upon signing up.",
+      "desc2": "1 credit allows you to send 1 heartfelt message to any AI guide. Once you start, you can explore the wisdom at your own pace."
+    },
+    "testimonials": {
+      "title": "Stories of Peace & Enlightenment",
+      "subtitle": "Read what our community experiences in their spiritual chats.",
+      "t1Text": "CreatorsAI has helped me find daily peace. Chatting with Krishna feels so comforting and aligned with the Gita.",
+      "t1Author": "Aarav S.",
+      "t1Role": "Daily User",
+      "t2Text": "The translations are beautiful. I can ask questions in Marathi and get answers that touch my soul.",
+      "t2Author": "Priyanka M.",
+      "t2Role": "Meditation Practitioner",
+      "t3Text": "A wonderful way to reflect on scriptures. It has become a crucial tool in my morning devotional routine.",
+      "t3Author": "David K.",
+      "t3Role": "Bible Study Leader"
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "q1": "Are these responses authentic?",
+      "a1": "Our AI guides are trained on official translations of sacred texts and historical teachings to represent the tone and wisdom of each guide accurately. However, AI responses are for guidance and reflection; they are not human spiritual authorities.",
+      "q2": "How do credits work?",
+      "a2": "Each user starts with 10 free credits. 1 credit allows you to send 1 message to a guide. Credits are consumed as you chat.",
+      "q3": "Is my data private?",
+      "a3": "Yes, all conversations are strictly confidential and encrypted. We respect your spiritual privacy.",
+      "q4": "Can I use CreatorsAI on my phone?",
+      "a4": "Yes! CreatorsAI is fully PWA-compatible. You can install it on your Android or iPhone home screen directly from your browser."
+    },
+    "ctaSection": {
+      "title": "Ready to begin your spiritual journey?",
+      "desc": "Connect with representatives of divine wisdom today. No credit card required.",
+      "button": "Start Chatting Now"
+    }
   }
 }

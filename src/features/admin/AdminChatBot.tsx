@@ -42,7 +42,7 @@ export default function AdminChatBot({ user }: { user: User | null}) {
 
   useEffect(() => {
     if (user === null || user === undefined || user?.email != "rutwik2808@gmail.com") {
-      navigate("/");
+      navigate("/chat");
     }
     loadChatBots();
   }, [loadChatBots, navigate, user]);

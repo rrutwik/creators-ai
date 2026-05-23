@@ -1,0 +1,8 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+Disallow: /chat
+Disallow: /admin
+Disallow: /api
+
+Sitemap: https://creatorsai.com/sitemap.xml

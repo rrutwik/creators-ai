@@ -31,6 +31,7 @@ import { LazyLoadComponent } from "./components/lazy/LazyLoadComponent";
 import { InstallPrompt } from "./components/hooks/InstallPrompt";
 import AdminChatBot from "./features/admin/AdminChatBot";
 import * as Sentry from "@sentry/react";
+import { LandingPage } from "./features/landing/LandingPage";
 
 export default function App() {
   const { t } = useTranslation();
@@ -220,10 +221,21 @@ export default function App() {
       <Routes>
         {/* Public routes */}
         <Route
+          path="/"
+          element={
+            <LandingPage
+              user={user}
+              onLogout={handleLogout}
+              theme={theme}
+              setTheme={setTheme}
+            />
+          }
+        />
+        <Route
           path="/login"
           element={
             isAuthenticated ? (
-              <Navigate to="/" replace />
+              <Navigate to="/chat" replace />
             ) : (
               <div className="min-h-screen bg-background">
                 <LanguageSwitcher language={language} onChange={setLanguage} />
@@ -243,7 +255,7 @@ export default function App() {
           }
         >
           <Route
-            path="/"
+            path="/chat"
             element={
               <LazyLoadComponent
                 component={ChatInterface}
