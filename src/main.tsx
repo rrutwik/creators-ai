@@ -23,8 +23,6 @@ Sentry.init({
   enableLogs: true,
 });
 
-Sentry.logger.info('User triggered test log', { log_source: 'sentry_test' })
-
 const updateSW = registerSW({
   onNeedRefresh() {
     // Show update prompt UI here

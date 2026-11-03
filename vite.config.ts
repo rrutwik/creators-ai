@@ -9,39 +9,40 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    visualizer({
-      template: 'treemap',
-      gzipSize: true,
-      brotliSize: true,
-      filename: 'bundle-analysis.html',
-    }),
-    sentryVitePlugin({
-      org: "test-company-1v",
-      project: "creators-ai",
-      authToken: "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",
-      telemetry: true
-    }),
+    // Bundle report is opt-in: `ANALYZE=1 npm run build` (it used to rewrite a tracked file on every build).
+    ...(process.env.ANALYZE
+      ? [visualizer({
+          template: 'treemap',
+          gzipSize: true,
+          brotliSize: true,
+          filename: 'bundle-analysis.html',
+        })]
+      : []),
+    // Source map upload needs SENTRY_AUTH_TOKEN in the build environment; it is skipped without it.
+    ...(process.env.SENTRY_AUTH_TOKEN
+      ? [sentryVitePlugin({
+          org: "test-company-1v",
+          project: "creators-ai",
+          authToken: process.env.SENTRY_AUTH_TOKEN,
+          telemetry: false,
+        })]
+      : []),
     VitePWA({
       registerType: 'autoUpdate', // auto-check for new SW
       includeAssets: ['public/*'],
-      manifest: {
-        name: 'CreatorsAI',
-        short_name: 'CreatorsAI',
-        description: 'My awesome Vite PWA',
-        theme_color: '#ffffff',
-        icons: [
-          { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },
-          { src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png' },
-        ],
-      },
+      // The web manifest is the static public/manifest.json linked from index.html.
+      manifest: false,
       workbox: {
+        // Crawler files must never be answered with the SPA shell.
+        navigateFallbackDenylist: [/^\/sitemap\.xml$/, /^\/robots\.txt$/],
         runtimeCaching: [
           {
-            // HTML (index.html) → StaleWhileRevalidate
+            // HTML → NetworkFirst, so visitors (and crawlers) get fresh pages and only fall back to cache offline
             urlPattern: ({ request }) => request.mode === 'navigate',
-            handler: 'StaleWhileRevalidate',
+            handler: 'NetworkFirst',
             options: {
               cacheName: 'html-cache',
+              networkTimeoutSeconds: 3,
             },
           },
           {

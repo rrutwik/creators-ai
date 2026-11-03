@@ -11,6 +11,11 @@ import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '../../../components/ui/dropdown-menu';
 import * as Sentry from "@sentry/react";
+import { toast } from 'sonner';
+
+const POLL_INTERVAL_MS = 1500;
+const MAX_WAIT_MS = 90_000;
+const MAX_POLL_FAILURES = 3;
 
 interface ChatWindowProps {
   selectedBot: ReligiousBot;
@@ -135,23 +140,51 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
         console.log('Polling interval already exists');
         return;
       }
+      const startedAt = Date.now();
+      let failures = 0;
+      const stopPolling = () => {
+        if (pollingInterval.current) {
+          clearInterval(pollingInterval.current);
+          pollingInterval.current = null;
+        }
+      };
+      // Never leave the user locked out: unlock the input and tell them what happened.
+      const giveUp = (reason: string) => {
+        console.error(reason);
+        stopPolling();
+        lastAssistantMessage.current = null;
+        setIsTyping(false);
+        setStreamingText('');
+        setStreamingTextIndex(0);
+        toast.error(t('chat.replyFailed', { defaultValue: "We couldn't get a reply. Please try again." }));
+      };
       pollingInterval.current = setInterval(async () => {
+        if (Date.now() - startedAt > MAX_WAIT_MS) {
+          giveUp('Timed out waiting for the reply');
+          return;
+        }
         const chatSession = await fetchNewMessages(chatUuid);
 
         if (!chatSession) {
-          console.error('Error fetching new messages');
-          clearInterval(pollingInterval.current!);
-          pollingInterval.current = null;
+          failures += 1;
+          if (failures >= MAX_POLL_FAILURES) giveUp('Error fetching new messages');
           return;
         }
+        failures = 0;
         const lastMessage = chatSession.messages[chatSession.messages.length - 1];
-        lastAssistantMessage.current = lastMessage;
-        if (chatSession.can_message == true) {
-          console.log('Chat session can_message', chatSession.can_message);
-          clearInterval(pollingInterval.current!);
-          pollingInterval.current = null;
+        // Only the assistant's message is typed out; the user's own message is already on screen.
+        if (lastMessage && lastMessage.role == MessageRole.ASSISTANT) {
+          lastAssistantMessage.current = lastMessage;
         }
-      }, 5000);
+        if (chatSession.can_message == true) {
+          stopPolling();
+          if (!lastAssistantMessage.current) {
+            // Nothing left to type out, show the stored conversation and unlock the input.
+            setMessages(chatSession.messages);
+            setIsTyping(false);
+          }
+        }
+      }, POLL_INTERVAL_MS);
       return () => {
         if (pollingInterval.current) {
           console.log('clearing pollingInterval.current');
@@ -160,7 +193,7 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
         }
       };
     },
-    [fetchNewMessages]
+    [fetchNewMessages, t]
   );
 
   const handleSendMessage = async () => {
@@ -205,6 +238,7 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
         },
       });
       console.error('Error sending message:', error);
+      toast.error(t('chat.sendFailed', { defaultValue: "Your message couldn't be sent. Please try again." }));
     }
   };
 

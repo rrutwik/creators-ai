@@ -39,17 +39,20 @@ i18n.on('languageChanged', (lng: string) => {
     localStorage.setItem('lang', lng);
     const html = document.documentElement;
     html.setAttribute('lang', lng);
-  } catch {}
+  } catch {
+    // Storage can be blocked (private mode); the language still applies for this session.
+  }
 });
 
 // If there's no stored preference and browser language isn't supported,
 // attempt a lightweight geolocation-based default (non-blocking).
-if (!stored) {
+// Skipped for automation (the build-time prerender runs with navigator.webdriver set) so the prerendered HTML stays English.
+if (typeof window !== 'undefined' && !stored && !navigator.webdriver) {
   (async () => {
     try {
       const res = await fetch('https://ipapi.co/json/');
       if (!res.ok) return;
-      const data: any = await res.json();
+      const data: { country?: string; region_code?: string; region?: string } = await res.json();
       const country: string | undefined = data?.country;
       const region: string = (data?.region_code || data?.region || '').toUpperCase();
       // Regional mapping within India

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, lazy } from "react";
 import type { ReactNode } from "react";
 import {
   BrowserRouter as Router,
@@ -26,12 +26,16 @@ import {
   trackLanguageChange,
   trackLogout as trackLogoutEvent,
 } from "./lib/analytics";
-import ChatInterface from "./features/chat/components/ChatInterface";
 import { LazyLoadComponent } from "./components/lazy/LazyLoadComponent";
 import { InstallPrompt } from "./components/hooks/InstallPrompt";
-import AdminChatBot from "./features/admin/AdminChatBot";
 import * as Sentry from "@sentry/react";
 import { LandingPage } from "./features/landing/LandingPage";
+import { NotFoundPage } from "./features/misc/NotFoundPage";
+import { SEO } from "./components/SEO";
+
+// Route-level code splitting: the landing page no longer ships the chat and admin bundles.
+const ChatInterface = lazy(() => import("./features/chat/components/ChatInterface"));
+const AdminChatBot = lazy(() => import("./features/admin/AdminChatBot"));
 
 export default function App() {
   const { t } = useTranslation();
@@ -238,6 +242,12 @@ export default function App() {
               <Navigate to="/chat" replace />
             ) : (
               <div className="min-h-screen bg-background">
+                <SEO
+                  title="Log in - CreatorsAI"
+                  description="Log in to CreatorsAI to chat with AI spiritual guides."
+                  path="/login"
+                  noindex
+                />
                 <LanguageSwitcher language={language} onChange={setLanguage} />
                 <LoginPage onLogin={handleLogin} />
                 <Toaster />
@@ -250,6 +260,12 @@ export default function App() {
         <Route
           element={
             <ProtectedRoute>
+              <SEO
+                title="Chat - CreatorsAI"
+                description="Chat with your AI spiritual guide on CreatorsAI."
+                path="/chat"
+                noindex
+              />
               <Outlet />
             </ProtectedRoute>
           }
@@ -284,8 +300,8 @@ export default function App() {
           </Route>
         </Route>
 
-        {/* Fallback route */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        {/* Unknown URLs get a real (noindex) not-found page instead of a redirect to "/" */}
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
       <Toaster />
     </div>

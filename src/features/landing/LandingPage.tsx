@@ -18,6 +18,12 @@ import {
 } from "lucide-react";
 import { useSEO } from "../../components/hooks/useSEO";
 import type { THEME_MODES } from "../../utils/consts";
+import {
+  DEFAULT_DESCRIPTION,
+  DEFAULT_KEYWORDS,
+  DEFAULT_TITLE,
+  buildLandingSchema,
+} from "../../utils/seo";
 
 interface LandingPageProps {
   user: any;
@@ -31,37 +37,6 @@ export function LandingPage({ user, theme, setTheme }: LandingPageProps) {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
-
-  // SEO Optimization Configuration
-  const pageTitle = "CreatorsAI - Connect with AI Spiritual Guides & Deities";
-  const pageDesc = "Connect with divine wisdom from spiritual and religious traditions. Chat with AI representations of Krishna, Shiva, Jesus, Ganesha, and Buddha for spiritual guidance and daily mindfulness.";
-  const pageKeywords = "spiritual chatbot, AI krishna, AI jesus, AI buddha, chat with deities, Gita AI, religious wisdom, mindfulness, spiritual guides, creatorsai";
-  
-  const schemaMarkup = {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "CreatorsAI",
-    "operatingSystem": "All",
-    "applicationCategory": "EducationalApplication",
-    "description": "Connect with divine wisdom from spiritual and religious traditions. Chat with AI representations of Krishna, Shiva, Jesus, Ganesha, and Buddha.",
-    "offers": {
-      "@type": "Offer",
-      "price": "0.00",
-      "priceCurrency": "INR"
-    },
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.9",
-      "ratingCount": "1240"
-    }
-  };
-
-  useSEO({
-    title: pageTitle,
-    description: pageDesc,
-    keywords: pageKeywords,
-    schema: schemaMarkup
-  });
 
   // Featured Guides with Custom Theme/Visual Gradient
   const featuredGuides = [
@@ -133,6 +108,15 @@ export function LandingPage({ user, theme, setTheme }: LandingPageProps) {
       a: t("landing.faq.a4")
     }
   ];
+
+  // Structured data. There is deliberately no aggregateRating: we have no real review data to back it.
+  useSEO({
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+    keywords: DEFAULT_KEYWORDS,
+    path: "/",
+    schema: buildLandingSchema(faqs),
+  });
 
   const handleLanguageChange = (lng: string) => {
     i18n.changeLanguage(lng);
@@ -703,16 +687,21 @@ export function LandingPage({ user, theme, setTheme }: LandingPageProps) {
                   <button
                     id={`faq-btn-${index}`}
                     onClick={() => setActiveFaq(isOpen ? null : index)}
+                    aria-expanded={isOpen}
                     className="w-full px-6 py-4 flex items-center justify-between font-bold text-left text-sm md:text-base hover:bg-muted/30 transition-colors cursor-pointer"
                   >
                     <span>{faq.q}</span>
                     <HelpCircle className={`h-5 w-5 text-muted-foreground transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
                   </button>
-                  {isOpen && (
-                    <div className="px-6 pb-5 pt-1 text-sm text-muted-foreground border-t border-border/40 bg-card/30 leading-relaxed">
-                      {faq.a}
-                    </div>
-                  )}
+                  {/* Always in the DOM (just hidden when closed) so the answers are indexable. */}
+                  <div
+                    role="region"
+                    aria-labelledby={`faq-btn-${index}`}
+                    hidden={!isOpen}
+                    className="px-6 pb-5 pt-1 text-sm text-muted-foreground border-t border-border/40 bg-card/30 leading-relaxed"
+                  >
+                    {faq.a}
+                  </div>
                 </div>
               );
             })}
@@ -764,6 +753,12 @@ export function LandingPage({ user, theme, setTheme }: LandingPageProps) {
             </a>
             <a href="#faq" className="hover:text-primary transition-colors">
               {t("landing.nav.faq")}
+            </a>
+            <a href="https://techkarmic.com/privacy-policy" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+              {t("landing.footer.privacy", { defaultValue: "Privacy Policy" })}
+            </a>
+            <a href="https://techkarmic.com/terms" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+              {t("landing.footer.terms", { defaultValue: "Terms" })}
             </a>
           </div>
         </div>
