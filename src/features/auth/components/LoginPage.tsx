@@ -7,6 +7,7 @@ import { GoogleLoginComponent } from './GoogleLogin';
 import { useTranslation } from 'react-i18next';
 import type { User } from '../../../types/interfaces';
 import * as Sentry from "@sentry/react";
+import { toast } from 'sonner';
 
 interface LoginPageProps {
   onLogin: (user: User) => void;
@@ -15,8 +16,11 @@ interface LoginPageProps {
 export function LoginPage({ onLogin }: LoginPageProps) {
   const { t, i18n } = useTranslation();
   const clientId = '201954194593-36t0nksh9jusg01k58et81ct27objt26.apps.googleusercontent.com';
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const loginFailedMessage = t('login.failed', { defaultValue: "We couldn't sign you in. Please try again." });
 
   const handleLoginSuccess = async (response: any) => {
+    setLoginError(null);
     try {
       const currentLanguage = i18n.language;
       const { data } = await loginWithGoogle({ ...response, language: currentLanguage });
@@ -33,6 +37,8 @@ export function LoginPage({ onLogin }: LoginPageProps) {
       onLogin(user);
     } catch (error) {
       console.error('Login failed:', error);
+      setLoginError(loginFailedMessage);
+      toast.error(loginFailedMessage);
       Sentry.captureException(error, {
         extra: {
           response,
@@ -44,6 +50,8 @@ export function LoginPage({ onLogin }: LoginPageProps) {
 
   const handleLoginError = (error: any) => {
     console.error('Login failed:', error);
+    setLoginError(loginFailedMessage);
+    toast.error(loginFailedMessage);
     Sentry.captureEvent({
       message: 'Login failed',
       extra: {
@@ -67,6 +75,11 @@ export function LoginPage({ onLogin }: LoginPageProps) {
               {t('login.welcomeDesc2')}
             </CardDescription>
           </CardHeader>
+          {loginError && (
+            <p role="alert" className="px-6 pb-2 text-center text-sm text-destructive">
+              {loginError}
+            </p>
+          )}
           <GoogleLoginComponent handleLoginSuccess={handleLoginSuccess} handleLoginError={handleLoginError} />
         </Card>
       </div>

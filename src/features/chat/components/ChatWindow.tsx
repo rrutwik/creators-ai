@@ -3,7 +3,7 @@ import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { ScrollArea } from '../../../components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '../../../components/ui/avatar';
-import { Send, Menu, MoreVertical, ArrowLeft, LogOut } from 'lucide-react';
+import { Send, Menu, MoreVertical, ArrowLeft, LogOut, Coins } from 'lucide-react';
 import { MessageRole, type ChatDetails, type ChatMessage, type ChatSession, type ReligiousBot } from '../../../types/interfaces';
 import { MessageList } from "./MessageList";
 import { getChatSession, sendMessage } from '../../../services/api';
@@ -26,9 +26,17 @@ interface ChatWindowProps {
   sidebarOpen: boolean;
   isMobile: boolean;
   onRequireAddCredits: () => void;
+  /** Remaining credits, shown next to the input. Undefined hides the indicator. */
+  credits?: number;
+  /** Ask the parent to re-read the user's credits (after a message is sent or a reply fails and is refunded). */
+  onCreditsChanged?: () => void;
 }
 
-export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogout, isMobile, sidebarOpen, onMessageSent, onRequireAddCredits }: ChatWindowProps) {
+// A reply shows up in about this many typing steps, however long it is, so long answers don't take half a minute.
+const TYPING_STEPS = 40;
+const LOW_CREDITS = 2;
+
+export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogout, isMobile, sidebarOpen, onMessageSent, onRequireAddCredits, credits, onCreditsChanged }: ChatWindowProps) {
   const { t } = useTranslation();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [streamingText, setStreamingText] = useState('');
@@ -196,13 +204,13 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
     [fetchNewMessages, t]
   );
 
-  const handleSendMessage = async () => {
-    if (inputValue.trim() === '') return;
+  const sendText = async (text: string, clearInput: boolean) => {
+    if (text.trim() === '') return;
     let updatedSession: ChatSession;
     setIsSending(true);
     try {
       try {
-        const response = await sendMessage(inputValue, selectedChat?.uuid, selectedBot?._id);
+        const response = await sendMessage(text, selectedChat?.uuid, selectedBot?._id);
         updatedSession = response.data;
       } catch (error) {
         if (axios.isAxiosError(error) && (error as any).response?.status === 400 && (error as any).response?.data?.status === '1000') {
@@ -211,7 +219,7 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
         }
         Sentry.captureException(error, {
           extra: {
-            inputValue,
+            text,
             selectedChat,
             selectedBot,
           },
@@ -226,20 +234,30 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
         setMessages(prev => [...prev, userMessage]);
       }
       setIsTyping(true);
-      setInputValue('');
+      if (clearInput) setInputValue('');
       onMessageSent(updatedSession.uuid);
+      onCreditsChanged?.();
       startPolling(updatedSession.uuid);
     } catch (error: any) {
       Sentry.captureException(error, {
         extra: {
-          inputValue,
+          text,
           selectedChat,
           selectedBot,
         },
       });
       console.error('Error sending message:', error);
+      // The typed text stays in the input, so the user can just press send again.
       toast.error(t('chat.sendFailed', { defaultValue: "Your message couldn't be sent. Please try again." }));
     }
+  };
+
+  const handleSendMessage = () => sendText(inputValue, true);
+
+  // "Try again" on a failed reply: send the user's last message once more.
+  const handleRetry = () => {
+    const lastUserMessage = [...messages].reverse().find((m) => m.role === MessageRole.USER);
+    if (lastUserMessage) void sendText(lastUserMessage.text, false);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -249,6 +267,12 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
     }
   };
 
+
+  // Disabling the input while a reply loads drops its focus; give it back when the reply is done.
+  // Skipped on mobile so the on-screen keyboard doesn't pop up by itself.
+  useEffect(() => {
+    if (!isTyping && !isSending && !isMobile) inputRef.current?.focus();
+  }, [isTyping, isSending, isMobile]);
 
   useEffect(() => {
     if (!lastAssistantMessage.current) return;
@@ -261,10 +285,13 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
         const lastMessage = lastAssistantMessage.current;
         if (lastMessage && lastMessage.text.length > streamingTextIndex) {
           setStreamingTextIndex((prev) => {
-            const newIndex = prev + 1;
+            // Several characters per tick for long replies: the whole answer appears in about TYPING_STEPS ticks.
+            const newIndex = prev + Math.max(1, Math.ceil(lastMessage.text.length / TYPING_STEPS));
             if (newIndex >= lastMessage.text.length) {
               if (pollingInterval.current == null) {
                 setIsTyping(false);
+                // A failed reply was refunded on the server, so re-read the balance.
+                onCreditsChanged?.();
                 setMessages((prev) => {
                   const newMessages = [...prev, lastMessage];
                   return newMessages;
@@ -302,6 +329,7 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
             variant="ghost"
             size="icon"
             onClick={() => onToggleSidebar()}
+            aria-label={sidebarOpen ? t('chat.closeMenu', { defaultValue: 'Close menu' }) : t('chat.openMenu', { defaultValue: 'Open menu' })}
             className="w-10 h-10 touch-manipulation flex-shrink-0"
           >
             {sidebarOpen ? <ArrowLeft className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -322,7 +350,7 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
           </Button> */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="w-10 h-10 touch-manipulation">
+              <Button variant="ghost" size="icon" className="w-10 h-10 touch-manipulation" aria-label={t('chat.moreOptions', { defaultValue: 'More options' })}>
                 <MoreVertical className="w-4 h-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -351,12 +379,13 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
           <MessageList 
             messages={messages} 
             selectedBot={selectedBot} 
-            isTyping={isTyping} 
-            streamingText={streamingText} 
+            isTyping={isTyping}
+            streamingText={streamingText}
+            onRetry={isTyping || isSending ? undefined : handleRetry}
           />
 
           {isTyping && streamingText == "" && (
-            <div className="flex justify-start">
+            <div className="flex justify-start" role="status" aria-label={t('chat.replying', { name: selectedBot.name, defaultValue: '{{name}} is replying' })}>
               <div className="flex space-x-3 max-w-[85%] sm:max-w-[80%]">
                 <Avatar className="w-8 h-8 flex-shrink-0">
                   <AvatarFallback className="text-lg">
@@ -395,15 +424,31 @@ export function ChatWindow({ selectedBot, selectedChat, onToggleSidebar, onLogou
             style={{ WebkitUserSelect: 'text' }}
             onTouchStart={(e) => e.stopPropagation()}
             disabled={isTyping || isSending}
+            aria-label={t('chat.placeholder', { name: selectedBot.name })}
           />
           <Button
             onClick={handleSendMessage}
             disabled={!inputValue.trim() || isTyping || isSending}
             className="h-12 w-12 p-0 flex-shrink-0 touch-manipulation"
+            aria-label={t('chat.send', { defaultValue: 'Send message' })}
           >
             <Send className="w-4 h-4" />
           </Button>
           </div>
+          {credits !== undefined && (
+            <div className="flex items-center justify-between gap-2 mt-3 text-xs">
+              <span className={`inline-flex items-center gap-1 ${credits <= LOW_CREDITS ? 'text-destructive font-medium' : 'text-muted-foreground'}`}>
+                <Coins className="w-3.5 h-3.5" aria-hidden="true" />
+                {t('chat.creditsLeft', { count: credits, defaultValue: '{{count}} credits left' })}
+                {credits <= LOW_CREDITS && credits > 0 && ` · ${t('chat.creditsLow', { defaultValue: 'running low' })}`}
+              </span>
+              {credits <= LOW_CREDITS && (
+                <Button variant="link" size="sm" className="h-auto p-0 text-xs" onClick={onRequireAddCredits}>
+                  {t('profile.addCredits')}
+                </Button>
+              )}
+            </div>
+          )}
           <p className="text-xs text-muted-foreground mt-3 text-center">
             {t('chat.disclaimer')}
           </p>

@@ -40,6 +40,8 @@ export interface ChatMessage {
   _id: string;
   role: number; // Using MessageRole enum
   text: string;
+  /** "text" for normal messages, "error" when the reply failed (shown with a Retry button). */
+  type?: string;
   isSpeaking?: boolean;
   updatedAt: string;
 }

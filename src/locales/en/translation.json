@@ -20,7 +20,8 @@
   "login": {
     "welcomeTitle": "Welcome to CreatorsAI",
     "welcomeDesc1": "Connect with divine wisdom from different religious traditions.",
-    "welcomeDesc2": "Chat with AI representations of religious figures for guidance and spiritual insights."
+    "welcomeDesc2": "Chat with AI representations of religious figures for guidance and spiritual insights.",
+    "failed": "We couldn't sign you in. Please try again."
   },
   "chat": {
     "loadingGuides": "Loading spiritual guides...",
@@ -29,11 +30,37 @@
     "chooseGuide": "Choose a Guide",
     "chooseAGuideFromLeft": "Choose a guide from the left sidebar",
     "placeholder": "Ask {{name}} for spiritual guidance...",
-    "disclaimer": "AI responses are based on religious texts and traditions. Always consult religious authorities for important spiritual matters."
+    "disclaimer": "AI responses are based on religious texts and traditions. Always consult religious authorities for important spiritual matters.",
+    "retry": "Try again",
+    "replyFailed": "We couldn't get a reply. Please try again.",
+    "sendFailed": "Your message couldn't be sent. Please try again.",
+    "loadFailedTitle": "We couldn't load your guides",
+    "loadFailedBody": "Please check your connection and try again.",
+    "historyLoadFailed": "Couldn't load more chats. Please try again.",
+    "renameFailed": "Couldn't rename the chat. Please try again.",
+    "deleteFailed": "Couldn't delete the chat. Please try again.",
+    "creditsLeft": "{{count}} credits left",
+    "creditsLow": "running low",
+    "send": "Send message",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "moreOptions": "More options",
+    "replying": "{{name}} is replying",
+    "messagesLabel": "Conversation"
   },
   "sidebar": {
     "religiousGuides": "Religious Guides",
-    "history": "History"
+    "history": "History",
+    "newChat": "New chat",
+    "noChats": "No chats yet. Pick a guide to start one.",
+    "rename": "Rename",
+    "delete": "Delete",
+    "renameTitle": "Rename chat",
+    "renameDesc": "Give this conversation a name you will recognise.",
+    "deleteTitle": "Delete this chat?",
+    "deleteDesc": "\"{{name}}\" and all its messages will be removed. This cannot be undone.",
+    "loadMore": "Load more",
+    "chatActions": "Options for {{name}}"
   },
   "install": {
     "title": "Install CreatorsAI",

@@ -5,11 +5,17 @@ import { ProfileModal } from '../../auth/components/ProfileModal';
 import { HistoryModal } from '../../settings/components/HistoryModal';
 import { SettingsModal } from '../../settings/components/SettingsModal';
 import { AddCreditsModal } from '../../settings/components/AddCreditsModal';
-import { getAvailableBots, getPastChats, getChatSession } from '../../../services/api';
+import { getAvailableBots, getPastChats, getChatSession, getUserDetails, renameChat, deleteChat } from '../../../services/api';
 import type { ChatDetails, ReligiousBot, User } from '../../../types/interfaces';
 import { useTranslation } from 'react-i18next';
 import type { THEME_MODES } from '../../../utils/consts';
 import * as Sentry from "@sentry/react";
+import { toast } from 'sonner';
+import { Button } from '../../../components/ui/button';
+import { Menu } from 'lucide-react';
+
+// History is loaded one page at a time (it used to ask for 10,000 chats on every open).
+const HISTORY_PAGE_SIZE = 30;
 
 interface ChatInterfaceProps {
   user: User | null;
@@ -50,23 +56,93 @@ const ChatInterface = memo(function ChatInterface({ user, onLogout, onUserUpdate
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
 
+  const [loadError, setLoadError] = useState(false);
+  const [loadAttempt, setLoadAttempt] = useState(0);
+  const [historyTotal, setHistoryTotal] = useState(0);
+  const [loadingMoreHistory, setLoadingMoreHistory] = useState(false);
+
+  // Guides and history load together. If either fails the user gets an error with a Retry button
+  // instead of an endless spinner.
   useEffect(() => {
-    const fetchBots = async () => {
+    let cancelled = false;
+    setLoadError(false);
+    const loadInitialData = async () => {
       try {
-        const bots = await getAvailableBots(); // Your API call
+        const [bots, history] = await Promise.all([
+          getAvailableBots(),
+          getPastChats(0, HISTORY_PAGE_SIZE),
+        ]);
+        if (cancelled) return;
         setReligiousBots(bots.records);
+        setChatHistory(history.data);
+        setHistoryTotal(history.total);
+        setLoadingChatHistory(false);
       } catch (error) {
-        Sentry.captureException(error, {
-          extra: {
-            user,
-          },
-        });
-        console.error('Failed to fetch bots:', error);
+        if (cancelled) return;
+        Sentry.captureException(error, { extra: { user } });
+        console.error('Failed to load guides or chat history:', error);
+        setLoadError(true);
       }
     };
+    loadInitialData();
+    return () => {
+      cancelled = true;
+    };
+  }, [loadAttempt]);
 
-    fetchBots();
-  }, []);
+  const handleLoadMoreHistory = async () => {
+    setLoadingMoreHistory(true);
+    try {
+      const page = await getPastChats(chatHistory.length, HISTORY_PAGE_SIZE);
+      setChatHistory((prev) => [...prev, ...page.data.filter((c) => !prev.some((p) => p.uuid === c.uuid))]);
+      setHistoryTotal(page.total);
+    } catch (error) {
+      Sentry.captureException(error, { extra: { user } });
+      toast.error(t('chat.historyLoadFailed', { defaultValue: "Couldn't load more chats. Please try again." }));
+    } finally {
+      setLoadingMoreHistory(false);
+    }
+  };
+
+  // Re-read the user's credits (they drop when a message is sent and come back if the reply fails).
+  const refreshCredits = async () => {
+    try {
+      const fresh = await getUserDetails(true);
+      onUserUpdated?.(fresh);
+    } catch (error) {
+      console.error('Failed to refresh credits:', error);
+    }
+  };
+
+  const handleNewChat = () => {
+    setSelectedChat(null);
+    setSidebarOpen(false);
+  };
+
+  const handleRenameChat = async (chat: ChatDetails, name: string) => {
+    const trimmed = name.trim();
+    if (!trimmed || trimmed === chat.name) return;
+    try {
+      await renameChat(chat.uuid, trimmed);
+      setChatHistory((prev) => prev.map((c) => (c.uuid === chat.uuid ? { ...c, name: trimmed } : c)));
+      setSelectedChat((prev) => (prev?.uuid === chat.uuid ? { ...prev, name: trimmed } : prev));
+    } catch (error) {
+      Sentry.captureException(error, { extra: { user } });
+      toast.error(t('chat.renameFailed', { defaultValue: "Couldn't rename the chat. Please try again." }));
+    }
+  };
+
+  const handleDeleteChat = async (chat: ChatDetails) => {
+    try {
+      await deleteChat(chat.uuid);
+      setChatHistory((prev) => prev.filter((c) => c.uuid !== chat.uuid));
+      setHistoryTotal((total) => Math.max(0, total - 1));
+      if (selectedChat?.uuid === chat.uuid) setSelectedChat(null);
+    } catch (error) {
+      Sentry.captureException(error, { extra: { user } });
+      toast.error(t('chat.deleteFailed', { defaultValue: "Couldn't delete the chat. Please try again." }));
+    }
+  };
 
   const handleToggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -119,24 +195,6 @@ const ChatInterface = memo(function ChatInterface({ user, onLogout, onUserUpdate
     };
   }, [isMobile, sidebarOpen]);
 
-  useEffect(() => {
-    const fetchChatHistory = async () => {
-      try {
-        const response = await getPastChats(0, 10000);
-        setChatHistory(response.data);
-        setLoadingChatHistory(false);
-      } catch (error) {
-        Sentry.captureException(error, {
-          extra: {
-            user,
-          },
-        });
-        console.error('Error fetching chat history:', error);
-      }
-    };
-    fetchChatHistory();
-  }, []);
-
   const handleMessageSent = async (sessionUuid: string) => {
     try {
       // Fetch the updated chat session
@@ -173,11 +231,30 @@ const ChatInterface = memo(function ChatInterface({ user, onLogout, onUserUpdate
     }
   };
 
+  if (loadError) {
+    return (
+      <div className="flex h-dvh bg-background relative">
+        <div className="flex-1 flex items-center justify-center p-6">
+          <div className="text-center max-w-sm" role="alert">
+            <div className="text-5xl mb-4" aria-hidden="true">🙏</div>
+            <h2 className="text-xl font-semibold mb-2">{t('chat.loadFailedTitle', { defaultValue: "We couldn't load your guides" })}</h2>
+            <p className="text-muted-foreground mb-6">
+              {t('chat.loadFailedBody', { defaultValue: 'Please check your connection and try again.' })}
+            </p>
+            <Button onClick={() => { setLoadingChatHistory(true); setLoadAttempt((n) => n + 1); }}>
+              {t('chat.retry', { defaultValue: 'Try again' })}
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (religiousBots.length === 0 || loadingChatHistory) {
     return (
-      <div className="flex h-screen bg-background relative">
+      <div className="flex h-dvh bg-background relative">
         <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">
+          <div className="text-center" role="status">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
             <p className="text-muted-foreground">{t('chat.loadingGuides')}</p>
           </div>
@@ -187,12 +264,13 @@ const ChatInterface = memo(function ChatInterface({ user, onLogout, onUserUpdate
   }
 
   return (
-    <div className="flex h-screen bg-background relative">
+    <div className="flex h-dvh bg-background relative">
       {/* Mobile Overlay */}
       {isMobile && sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/50 z-40"
           onClick={handleCloseSidebar}
+          aria-hidden="true"
         />
       )}
 
@@ -201,7 +279,7 @@ const ChatInterface = memo(function ChatInterface({ user, onLogout, onUserUpdate
         ${isMobile ? 'fixed z-50' : 'relative'} 
         ${isMobile && !sidebarOpen ? '-translate-x-full' : 'translate-x-0'}
         transition-transform duration-300 ease-in-out
-        ${isMobile ? 'h-full' : 'h-screen'}
+        ${isMobile ? 'h-full' : 'h-dvh'}
       `}>
         <Sidebar
           user={user}
@@ -240,13 +318,21 @@ const ChatInterface = memo(function ChatInterface({ user, onLogout, onUserUpdate
           collapsed={true}
           onToggleCollapse={handleCloseSidebar}
           isMobile={isMobile}
+          onNewChat={handleNewChat}
+          onRenameChat={handleRenameChat}
+          onDeleteChat={handleDeleteChat}
+          hasMoreHistory={chatHistory.length < historyTotal}
+          loadingMoreHistory={loadingMoreHistory}
+          onLoadMoreHistory={handleLoadMoreHistory}
         />
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0 h-screen">
+      <div className="flex-1 flex flex-col min-w-0 h-dvh">
         {selectedBot ? (
           <ChatWindow
+            credits={user?.credits}
+            onCreditsChanged={refreshCredits}
             selectedBot={selectedBot}
             selectedChat={selectedChat}
             onToggleSidebar={handleToggleSidebar}
@@ -257,17 +343,39 @@ const ChatInterface = memo(function ChatInterface({ user, onLogout, onUserUpdate
             onRequireAddCredits={() => user && setShowAddCredits(true)}
           />
         ) : (
-          <div className="flex-1 flex items-center justify-center p-8">
-            <div className="text-center max-w-md">
-              <div className="text-6xl mb-4">🙏</div>
-              <h2 className="text-2xl font-semibold mb-2">{t('chat.welcomeTitle')}</h2>
-              <p className="text-muted-foreground mb-4">{t('chat.welcomeBody')}</p>
-              {isMobile ? <button
+          <div className="flex-1 overflow-y-auto flex items-center justify-center p-6 md:p-8 relative">
+            {isMobile && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute top-3 left-3 w-10 h-10 touch-manipulation"
                 onClick={handleToggleSidebar}
-                className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+                aria-label={t('chat.openMenu', { defaultValue: 'Open menu' })}
               >
-                {t('chat.chooseGuide')}
-              </button> : <p>{t('chat.chooseAGuideFromLeft')}</p>}
+                <Menu className="w-5 h-5" />
+              </Button>
+            )}
+            <div className="text-center w-full max-w-2xl">
+              <div className="text-6xl mb-4" aria-hidden="true">🙏</div>
+              <h2 className="text-2xl font-semibold mb-2">{t('chat.welcomeTitle')}</h2>
+              <p className="text-muted-foreground mb-6">{t('chat.welcomeBody')}</p>
+              {/* Guides as cards: one tap to start, instead of "choose a guide from the left" */}
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
+                {religiousBots.map((bot) => (
+                  <li key={bot._id}>
+                    <button
+                      onClick={() => handleBotSelect(bot)}
+                      className="w-full flex items-center gap-3 p-4 rounded-xl border border-border bg-card hover:bg-muted/60 focus-visible:ring-2 focus-visible:ring-ring transition-colors touch-manipulation"
+                    >
+                      <span className="text-3xl flex-shrink-0" aria-hidden="true">{bot.avatar}</span>
+                      <span className="min-w-0">
+                        <span className="block font-medium truncate">{bot.name}</span>
+                        <span className="block text-sm text-muted-foreground line-clamp-2">{bot.description}</span>
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         )}

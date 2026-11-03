@@ -176,20 +176,24 @@ export default function App() {
     // This effect can be used for any side effects related to language or auth changes
   }, [language, isAuthenticated]);
 
-  // Loading component for authentication state
-  const LoadingScreen = () => (
+  // NOTE: the route guards and the page body below are plain functions that return elements, not components
+  // declared inside App. A component declared inside App gets a new identity on every render, which made React
+  // remount the whole tree (and reset the open chat) whenever the theme, language or credits changed.
+
+  // Loading screen for the authentication check
+  const loadingScreen = (
     <div className="min-h-screen bg-background flex items-center justify-center">
-      <div className="text-center">
+      <div className="text-center" role="status">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-        <p className="text-muted-foreground">Loading...</p>
+        <p className="text-muted-foreground">{t("common.loading")}</p>
       </div>
     </div>
   );
 
-  // ProtectedRoute component for authenticated routes
-  const ProtectedRoute = ({ children }: { children: ReactNode }) => {
+  // Guard for authenticated routes
+  const guardProtected = (children: ReactNode): ReactNode => {
     if (isAuthenticated === null) {
-      return <LoadingScreen />;
+      return loadingScreen;
     }
 
     if (!isAuthenticated) {
@@ -199,10 +203,10 @@ export default function App() {
     return <>{children}</>;
   };
 
-  // AdminRoute component for admin-only routes
-  const AdminRoute = ({ children }: { children: ReactNode }) => {
+  // Guard for admin-only routes
+  const guardAdmin = (children: ReactNode): ReactNode => {
     if (isAuthenticated === null) {
-      return <LoadingScreen />;
+      return loadingScreen;
     }
 
     if (!isAuthenticated) {
@@ -219,7 +223,7 @@ export default function App() {
     return <>{children}</>;
   };
 
-  const AppContent = () => (
+  const renderAppContent = () => (
     <div className="min-h-screen bg-background">
       <InstallPrompt />
       <Routes>
@@ -250,7 +254,6 @@ export default function App() {
                 />
                 <LanguageSwitcher language={language} onChange={setLanguage} />
                 <LoginPage onLogin={handleLogin} />
-                <Toaster />
               </div>
             )
           }
@@ -258,8 +261,8 @@ export default function App() {
 
         {/* Protected routes */}
         <Route
-          element={
-            <ProtectedRoute>
+          element={guardProtected(
+            <>
               <SEO
                 title="Chat - CreatorsAI"
                 description="Chat with your AI spiritual guide on CreatorsAI."
@@ -267,8 +270,8 @@ export default function App() {
                 noindex
               />
               <Outlet />
-            </ProtectedRoute>
-          }
+            </>
+          )}
         >
           <Route
             path="/chat"
@@ -280,17 +283,12 @@ export default function App() {
                 theme={theme}
                 setTheme={setTheme}
                 language={language}
+                onUserUpdated={setUser}
               />
             }
           />
           {/* Admin routes */}
-          <Route
-            element={
-              <AdminRoute>
-                <Outlet />
-              </AdminRoute>
-            }
-          >
+          <Route element={guardAdmin(<Outlet />)}>
             <Route path="/admin/chatbot" element={
               <LazyLoadComponent
                 component={AdminChatBot}
@@ -310,7 +308,7 @@ export default function App() {
   // Wrap the app with Router at the root level
   return (
     <Router>
-      <AppContent />
+      {renderAppContent()}
     </Router>
   );
 }

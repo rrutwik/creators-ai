@@ -107,7 +107,19 @@ export const getChatSession = (chatId: string) => {
     return handleRequest<{ data: ChatSession }>(() => getAuthenticatedAxiosInstance().get(`/chat/${chatId}`));
 };
 
-export const sendMessage = (message: string, chatUUID?: string, chatbot_id?: string) => {
+export const renameChat = (chatUUID: string, name: string) => {
+    return handleRequest<{ data: { name: string; uuid: string } }>(() =>
+        getAuthenticatedAxiosInstance().patch(`/chat/${chatUUID}`, { name })
+    );
+};
+
+export const deleteChat = (chatUUID: string) => {
+    return handleRequest<{ message: string }>(() =>
+        getAuthenticatedAxiosInstance().delete(`/chat/${chatUUID}`)
+    );
+};
+
+export const sendMessage =(message: string, chatUUID?: string, chatbot_id?: string) => {
     return handleRequest<{ message: string, data: ChatSession }>(() =>
         getAuthenticatedAxiosInstance().post(`/chat/message`, { chat_id: chatUUID, message, chatbot_id })
     );
