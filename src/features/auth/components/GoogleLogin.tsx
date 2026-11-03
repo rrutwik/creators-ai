@@ -1,7 +1,7 @@
 import { GoogleLogin } from "@react-oauth/google";
 import { CardContent } from "../../../components/ui/card";
 import { useEffect } from "react";
-import * as Sentry from "@sentry/react";
+import * as Sentry from "../../../lib/sentry";
 
 export function GoogleLoginComponent({
   handleLoginSuccess,

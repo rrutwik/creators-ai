@@ -34,7 +34,9 @@ export default defineConfig({
       manifest: false,
       workbox: {
         // Crawler files must never be answered with the SPA shell.
-        navigateFallbackDenylist: [/^\/sitemap\.xml$/, /^\/robots\.txt$/],
+        // /guides/* are prerendered static pages; without this the app-shell fallback (registered before the
+        // runtime routes below) would answer them with the landing page's HTML on repeat visits.
+        navigateFallbackDenylist: [/^\/sitemap\.xml$/, /^\/robots\.txt$/, /^\/guides\//],
         runtimeCaching: [
           {
             // HTML → NetworkFirst, so visitors (and crawlers) get fresh pages and only fall back to cache offline

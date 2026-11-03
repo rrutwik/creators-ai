@@ -11,7 +11,7 @@ import type {
 import { listAllChatBots, editChatBot } from "../../services/api";
 import { Toaster } from "../../components/ui/sonner";
 import { useNavigate } from "react-router-dom";
-import * as Sentry from "@sentry/react";
+import * as Sentry from "../../lib/sentry";
 type ViewMode = "list" | "create" | "edit";
 
 export default function AdminChatBot({ user }: { user: User | null}) {

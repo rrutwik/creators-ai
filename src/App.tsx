@@ -28,9 +28,10 @@ import {
 } from "./lib/analytics";
 import { LazyLoadComponent } from "./components/lazy/LazyLoadComponent";
 import { InstallPrompt } from "./components/hooks/InstallPrompt";
-import * as Sentry from "@sentry/react";
+import * as Sentry from "./lib/sentry";
 import { LandingPage } from "./features/landing/LandingPage";
 import { NotFoundPage } from "./features/misc/NotFoundPage";
+import { GuidePage } from "./features/guides/GuidePage";
 import { SEO } from "./components/SEO";
 
 // Route-level code splitting: the landing page no longer ships the chat and admin bundles.
@@ -239,6 +240,9 @@ export default function App() {
             />
           }
         />
+        {/* Public guide pages. Not lazy on purpose: they are prerendered, and swapping the prerendered HTML for a
+            loading skeleton would make the content flash away before the chunk arrives. */}
+        <Route path="/guides/:slug" element={<GuidePage user={user} />} />
         <Route
           path="/login"
           element={

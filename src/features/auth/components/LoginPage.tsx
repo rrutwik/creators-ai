@@ -6,7 +6,7 @@ import { getUserDetails, loginWithGoogle } from '../../../services/api';
 import { GoogleLoginComponent } from './GoogleLogin';
 import { useTranslation } from 'react-i18next';
 import type { User } from '../../../types/interfaces';
-import * as Sentry from "@sentry/react";
+import * as Sentry from "../../../lib/sentry";
 import { toast } from 'sonner';
 
 interface LoginPageProps {

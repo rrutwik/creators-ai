@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { getGuideById } from "../../content/guides";
 import { useTranslation } from "react-i18next";
 import {
   Sun,
@@ -530,6 +531,15 @@ export function LandingPage({ user, theme, setTheme }: LandingPageProps) {
                   <MessageSquare className="h-4 w-4" />
                   <span>{t("landing.guides.cta", { name: guide.name })}</span>
                 </button>
+                {/* Plain link so crawlers can follow it to the guide's own page */}
+                {getGuideById(guide.id) && (
+                  <Link
+                    to={`/guides/${getGuideById(guide.id)!.slug}`}
+                    className="mt-3 text-center text-sm font-semibold text-primary underline-offset-4 hover:underline"
+                  >
+                    {t("landing.guides.learnMore", { defaultValue: "Learn more about this guide" })}
+                  </Link>
+                )}
               </div>
             ))}
           </div>

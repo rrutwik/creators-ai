@@ -1,6 +1,8 @@
 // Single source of truth for site-wide SEO values.
 // index.html carries the same defaults for crawlers that do not run JavaScript.
-export const SITE_URL = "https://creatorsai.com";
+import type { GuidePageContent } from "../content/guides";
+
+export const SITE_URL ="https://creatorsai.techkarmic.com";
 export const SITE_NAME = "CreatorsAI";
 export const DEFAULT_TITLE = "CreatorsAI - Connect with AI Spiritual Guides & Deities";
 export const DEFAULT_DESCRIPTION =
@@ -10,6 +12,9 @@ export const DEFAULT_KEYWORDS =
 export const DEFAULT_IMAGE = `${SITE_URL}/og-image.png`;
 export const DEFAULT_ROBOTS = "index, follow, max-image-preview:large";
 export const NOINDEX_ROBOTS = "noindex, nofollow";
+
+/** Last substantive edit of the landing page copy, used for the sitemap's lastmod (bump when the text changes). */
+export const LANDING_UPDATED = "2026-11-03";
 
 export const FAQ_COUNT = 4;
 
@@ -64,4 +69,39 @@ export const buildLandingSchema = (faqs: Faq[]) => ({
   ],
 });
 
-export const absoluteUrl =(path: string) => `${SITE_URL}${path === "/" ? "/" : path.replace(/\/+$/, "")}`;
+/** WebPage + BreadcrumbList + FAQPage for a /guides/<slug> page. Shared by the page (client) and the build-time prerender. */
+export const buildGuideSchema = (guide: GuidePageContent) => {
+  const url = `${SITE_URL}/guides/${guide.slug}`;
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": `${url}#webpage`,
+        url,
+        name: guide.title,
+        description: guide.description,
+        isPartOf: { "@id": `${SITE_URL}/#website` },
+        dateModified: guide.updated,
+        inLanguage: "en",
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: SITE_NAME, item: `${SITE_URL}/` },
+          { "@type": "ListItem", position: 2, name: guide.name, item: url },
+        ],
+      },
+      {
+        "@type": "FAQPage",
+        mainEntity: guide.faqs.map((faq) => ({
+          "@type": "Question",
+          name: faq.q,
+          acceptedAnswer: { "@type": "Answer", text: faq.a },
+        })),
+      },
+    ],
+  };
+};
+
+export const absoluteUrl = (path: string) => `${SITE_URL}${path === "/" ? "/" : path.replace(/\/+$/, "")}`;

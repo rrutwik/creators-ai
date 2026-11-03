@@ -10,7 +10,7 @@ import { getChatSession, sendMessage } from '../../../services/api';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '../../../components/ui/dropdown-menu';
-import * as Sentry from "@sentry/react";
+import * as Sentry from "../../../lib/sentry";
 import { toast } from 'sonner';
 
 const POLL_INTERVAL_MS = 1500;

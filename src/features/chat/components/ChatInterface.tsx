@@ -9,7 +9,7 @@ import { getAvailableBots, getPastChats, getChatSession, getUserDetails, renameC
 import type { ChatDetails, ReligiousBot, User } from '../../../types/interfaces';
 import { useTranslation } from 'react-i18next';
 import type { THEME_MODES } from '../../../utils/consts';
-import * as Sentry from "@sentry/react";
+import * as Sentry from "../../../lib/sentry";
 import { toast } from 'sonner';
 import { Button } from '../../../components/ui/button';
 import { Menu } from 'lucide-react';

@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { Button } from '../ui/button';
 import { X, Download, Smartphone, Globe, SmartphoneIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import * as Sentry from "@sentry/react";
+import * as Sentry from "../../lib/sentry";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<{ outcome: 'accepted' | 'dismissed' }>;

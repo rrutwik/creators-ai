@@ -5,4 +5,4 @@ Disallow: /chat
 Disallow: /admin
 Disallow: /api
 
-Sitemap: https://creatorsai.com/sitemap.xml
+Sitemap: https://creatorsai.techkarmic.com/sitemap.xml
